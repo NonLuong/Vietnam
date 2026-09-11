@@ -1,0 +1,9 @@
+export const categories = ['Flights','Accommodation','Transportation','Food','Activities','Shopping','Other'] as const
+export type Category = typeof categories[number]
+export type Currency = 'THB' | 'VND'
+export type Status = 'paid' | 'planned'
+export type Person = { id: string; name: string }
+export type Expense = { id: string; date: string; item: string; category: Category; amount: number; currency: Currency; payerId: string; status: Status; note: string }
+export type DayPlan = { date: string; title: string; activities: string; budgetTHB: number }
+export type Settings = { tripName: string; startDate: string; endDate: string; budgetTHB: number; exchangeRate: number; travelers: Person[] }
+export type AppData = { settings: Settings; expenses: Expense[]; days: DayPlan[] }
