@@ -1,127 +1,29 @@
 import { icon } from './icons'
+type Mode='standard'|'currency'|'split'
+type Item={id:string;expression:string;result:number;createdAt:string;mode:Mode}
+export type CalculatorContext={exchangeRate:number;travelers:number}
+const KEY='da-nang-calculator-history-v2';let expression='',display='0',fresh=false,mode:Mode='standard',resultCurrency:'THB'|'VND'='THB',ctx:CalculatorContext={exchangeRate:760,travelers:4}
+const history=():Item[]=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]') as Item[]}catch{return[]}}
+const save=(items:Item[])=>localStorage.setItem(KEY,JSON.stringify(items.slice(0,50)))
+const fmt=(n:number)=>new Intl.NumberFormat('th-TH',{maximumFractionDigits:8}).format(n)
 
-type HistoryItem = { id: string; expression: string; result: number; createdAt: string }
-const HISTORY_KEY = 'da-nang-calculator-history-v1'
-let expression = ''
-let display = '0'
-let justCalculated = false
-
-function loadHistory(): HistoryItem[] {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') as HistoryItem[] }
-  catch { return [] }
+/** Safe arithmetic parser; intentionally supports numbers and + - * / ( ) only. */
+export function calculateExpression(source:string):number{
+  const clean=source.replaceAll('×','*').replaceAll('÷','/').replaceAll('−','-').replace(/\s/g,'')
+  const tokens=clean.match(/\d*\.?\d+|[()+\-*/]/g)||[]
+  if(!clean||tokens.join('')!==clean)throw Error('invalid')
+  let i=0
+  const atom=():number=>{const t=tokens[i++];if(t==='('){const n=sum();if(tokens[i++]!==')')throw Error('invalid');return n}if(t==='-')return-atom();const n=Number(t);if(!Number.isFinite(n))throw Error('invalid');return n}
+  const product=():number=>{let n=atom();while(tokens[i]==='*'||tokens[i]==='/'){const op=tokens[i++],r=atom();if(op==='/'&&r===0)throw Error('zero');n=op==='*'?n*r:n/r}return n}
+  const sum=():number=>{let n=product();while(tokens[i]==='+'||tokens[i]==='-'){const op=tokens[i++],r=product();n=op==='+'?n+r:n-r}return n}
+  const n=sum();if(i!==tokens.length||!Number.isFinite(n))throw Error('invalid');return n
 }
-
-function saveHistory(items: HistoryItem[]) {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 50)))
-}
-
-function formatResult(value: number) {
-  return new Intl.NumberFormat('th-TH', { maximumFractionDigits: 8 }).format(value)
-}
-
-function safeCalculate(value: string) {
-  const normalized = value.replaceAll('×', '*').replaceAll('÷', '/')
-  if (!normalized || !/^[0-9+\-*/().\s]+$/.test(normalized)) throw new Error('invalid')
-  const result = Function(`"use strict"; return (${normalized})`)() as unknown
-  if (typeof result !== 'number' || !Number.isFinite(result)) throw new Error('invalid')
-  return result
-}
-
-function button(label: string, value: string, className = '') {
-  return `<button class="calc-key ${className}" data-calc-value="${value}" aria-label="${label}">${label}</button>`
-}
-
-function historyHtml(history: HistoryItem[]) {
-  if (!history.length) return `<div class="empty">${icon('calculator',34)}<strong>ยังไม่มีประวัติ</strong><span>ผลลัพธ์ที่กดเครื่องหมายเท่ากับจะปรากฏที่นี่</span></div>`
-  return history.map(item => `<button class="history-item" data-history-id="${item.id}"><span><strong>${item.expression}</strong><small>${new Intl.DateTimeFormat('th-TH',{dateStyle:'medium',timeStyle:'short'}).format(new Date(item.createdAt))}</small></span><b>${formatResult(item.result)}</b></button>`).join('')
-}
-
-export function calculator() {
-  const history = loadHistory()
-  return `<div class="page-head"><div><h1>เครื่องคิดเลข</h1><p>คำนวณค่าใช้จ่ายระหว่างวางแผน พร้อมบันทึกประวัติอัตโนมัติ</p></div></div>
-  <section class="calculator-layout">
-    <article class="card calculator-card">
-      <div class="calc-screen" aria-live="polite"><div class="calc-expression">${expression || 'พร้อมคำนวณ'}</div><output class="calc-result" id="calcResult">${display}</output></div>
-      <div class="calc-grid" role="group" aria-label="แป้นเครื่องคิดเลข">
-        ${button('ล้าง','clear','utility')}${button('ลบ','backspace','utility')}${button('%','%','utility')}${button('÷','÷','operator')}
-        ${button('7','7')}${button('8','8')}${button('9','9')}${button('×','×','operator')}
-        ${button('4','4')}${button('5','5')}${button('6','6')}${button('−','-','operator')}
-        ${button('1','1')}${button('2','2')}${button('3','3')}${button('+','+','operator')}
-        ${button('0','0','zero')}${button('.','.')}${button('=','equals','equals')}
-      </div>
-      <button class="btn copy-result" id="copyCalcResult">คัดลอกผลลัพธ์</button>
-      <p class="calc-hint">ใช้แป้นพิมพ์ตัวเลข เครื่องหมายคำนวณ และ Enter ได้</p>
-    </article>
-    <article class="card history-card">
-      <div class="section-head"><div><h2>ประวัติการคำนวณ</h2><small>เก็บสูงสุด 50 รายการในอุปกรณ์นี้</small></div>${history.length?'<button class="btn danger" id="clearCalcHistory">ล้างประวัติ</button>':''}</div>
-      <div id="calcHistory">${historyHtml(history)}</div>
-    </article>
-  </section>`
-}
-
-function updateView() {
-  const screen = document.querySelector<HTMLOutputElement>('#calcResult')
-  const formula = document.querySelector<HTMLElement>('.calc-expression')
-  if (screen) screen.textContent = display
-  if (formula) formula.textContent = expression || 'พร้อมคำนวณ'
-}
-
-function refreshHistory() {
-  const history = document.querySelector('#calcHistory')
-  if (history) history.innerHTML = historyHtml(loadHistory())
-}
-
-function calculate() {
-  try {
-    const original = expression
-    const result = safeCalculate(expression)
-    const history = loadHistory()
-    history.unshift({ id: crypto.randomUUID(), expression: `${original} =`, result, createdAt: new Date().toISOString() })
-    saveHistory(history)
-    display = formatResult(result)
-    expression = String(result)
-    justCalculated = true
-    refreshHistory()
-    updateView()
-  } catch {
-    display = 'คำนวณไม่ได้'
-    justCalculated = true
-    updateView()
-  }
-}
-
-function inputValue(value: string) {
-  if (value === 'clear') { expression = ''; display = '0'; justCalculated = false }
-  else if (value === 'backspace') { expression = expression.slice(0, -1); display = expression || '0'; justCalculated = false }
-  else if (value === 'equals') { calculate(); return }
-  else if (value === '%') { if (expression) { expression = `(${expression})/100`; calculate(); return } }
-  else {
-    if (justCalculated && /[0-9.]/.test(value)) expression = ''
-    expression += value
-    display = expression
-    justCalculated = false
-  }
-  updateView()
-}
-
-export function registerCalculatorEvents() {
-  document.addEventListener('click', event => {
-    const target = event.target as HTMLElement
-    const key = target.closest<HTMLElement>('[data-calc-value]')
-    if (key) inputValue(key.dataset.calcValue || '')
-    const historyButton = target.closest<HTMLElement>('[data-history-id]')
-    if (historyButton) {
-      const item = loadHistory().find(x => x.id === historyButton.dataset.historyId)
-      if (item) { expression = String(item.result); display = formatResult(item.result); justCalculated = true; updateView() }
-    }
-    if (target.closest('#clearCalcHistory') && confirm('ล้างประวัติการคำนวณทั้งหมดหรือไม่?')) { saveHistory([]); refreshHistory() }
-    if (target.closest('#copyCalcResult')) navigator.clipboard.writeText(display).catch(() => undefined)
-  })
-  document.addEventListener('keydown', event => {
-    if (!document.querySelector('.calculator-card') || (event.target as HTMLElement).matches('input,textarea,select')) return
-    if (/^[0-9.+\-*/()]$/.test(event.key)) { event.preventDefault(); inputValue(event.key.replace('*','×').replace('/','÷')) }
-    else if (event.key === 'Enter' || event.key === '=') { event.preventDefault(); inputValue('equals') }
-    else if (event.key === 'Backspace') { event.preventDefault(); inputValue('backspace') }
-    else if (event.key === 'Escape') { event.preventDefault(); inputValue('clear') }
-  })
-}
+const key=(label:string,value:string,klass='')=>`<button class="calc-key ${klass}" type="button" data-calc-value="${value}" aria-label="${label}">${label}</button>`
+function historyHtml(){const items=history();if(!items.length)return `<div class="empty">${icon('calculator',34)}<strong>ยังไม่มีประวัติ</strong><span>ผลลัพธ์จะบันทึกเมื่อกดเท่ากับ</span></div>`;return items.map(x=>`<div class="history-line"><button class="history-item" type="button" data-history-id="${x.id}"><span><strong>${x.expression}</strong><small>${new Intl.DateTimeFormat('th-TH',{dateStyle:'medium',timeStyle:'short'}).format(new Date(x.createdAt))}</small></span><b>${fmt(x.result)}</b></button><button class="icon-btn" type="button" data-remove-history="${x.id}" aria-label="ลบรายการนี้">${icon('trash')}</button></div>`).join('')}
+function toolHtml(){if(mode==='currency')return `<div class="calc-tools"><label>แปลงจาก <select id="convertFrom" class="select"><option>THB</option><option>VND</option></select></label><output id="toolResult">กรอกจำนวนแล้วกด =</output><small>1 THB = ${fmt(ctx.exchangeRate)} VND</small></div>`;if(mode==='split')return `<div class="calc-tools"><label>จำนวนคน <input id="splitPeople" class="input" type="number" min="1" step="1" value="${ctx.travelers}"></label><output id="toolResult">กรอกยอดแล้วกด =</output></div>`;return''}
+export function calculator(next:CalculatorContext){ctx=next;return `<div class="page-head"><div><h1>เครื่องคิดเลข</h1><p>คำนวณ แปลงสกุลเงิน หารต่อคน และเก็บประวัติในอุปกรณ์นี้</p></div></div><section class="calculator-layout"><article class="card calculator-card"><div class="calc-tabs" role="tablist">${([['standard','ทั่วไป'],['currency','THB / VND'],['split','หารต่อคน']] as const).map(([id,label])=>`<button type="button" role="tab" aria-selected="${mode===id}" class="btn ${mode===id?'primary':''}" data-calc-mode="${id}">${label}</button>`).join('')}</div>${toolHtml()}<div class="calc-screen" aria-live="polite"><div class="calc-expression">${expression||'พร้อมคำนวณ'}</div><output class="calc-result" id="calcResult">${display}</output></div><div class="calc-grid" role="group" aria-label="แป้นเครื่องคิดเลข">${key('ล้าง','clear','utility')}${key('ลบ','backspace','utility')}${key('%','%','utility')}${key('÷','÷','operator')}${key('7','7')}${key('8','8')}${key('9','9')}${key('×','×','operator')}${key('4','4')}${key('5','5')}${key('6','6')}${key('−','-','operator')}${key('1','1')}${key('2','2')}${key('3','3')}${key('+','+','operator')}${key('0','0','zero')}${key('.','.')}${key('=','equals','equals')}</div><div class="calc-actions"><button class="btn" id="copyCalcResult" type="button">คัดลอกผลลัพธ์</button><button class="btn primary" id="resultToExpense" type="button">เพิ่มเป็นค่าใช้จ่าย</button></div><p class="calc-hint">เปอร์เซ็นต์คิดจากยอดก่อนหน้า เช่น 200 + 10% = 220</p></article><article class="card history-card"><div class="section-head"><div><h2>ประวัติการคำนวณ</h2><small>เก็บสูงสุด 50 รายการ</small></div>${history().length?'<button class="btn danger" id="clearCalcHistory" type="button">ล้างทั้งหมด</button>':''}</div><div id="calcHistory">${historyHtml()}</div></article></section>`}
+function update(){document.querySelector('#calcResult')!.textContent=display;document.querySelector('.calc-expression')!.textContent=expression||'พร้อมคำนวณ'}
+function refresh(){const el=document.querySelector('#calcHistory');if(el)el.innerHTML=historyHtml()}
+function evaluate(){try{const original=expression;let result=calculateExpression(expression),label=`${original} =`;resultCurrency='THB';if(mode==='currency'){const from=(document.querySelector('#convertFrom') as HTMLSelectElement).value;resultCurrency=from==='THB'?'VND':'THB';result=from==='THB'?result*ctx.exchangeRate:result/ctx.exchangeRate;label=`${original} ${from} → ${resultCurrency}`;document.querySelector('#toolResult')!.textContent=`${fmt(result)} ${resultCurrency}`}if(mode==='split'){const people=Math.max(1,Math.floor(Number((document.querySelector('#splitPeople') as HTMLInputElement).value)||ctx.travelers));result/=people;label=`${original} ÷ ${people} คน`;document.querySelector('#toolResult')!.textContent=`คนละ ${fmt(result)} บาท`}save([{id:crypto.randomUUID(),expression:label,result,createdAt:new Date().toISOString(),mode},...history()]);expression=String(result);display=fmt(result);fresh=true;refresh();update()}catch{display='คำนวณไม่ได้';fresh=true;update()}}
+function input(v:string){if(v==='clear'){expression='';display='0';fresh=false}else if(v==='backspace'){expression=expression.slice(0,-1);display=expression||'0';fresh=false}else if(v==='equals'){evaluate();return}else if(v==='%'){const m=expression.match(/(\d*\.?\d+)$/);if(m){const prefix=expression.slice(0,-m[1].length),base=prefix.match(/^(.*?)([-+])$/)?.[1];expression=prefix+(base?`(${base})*${m[1]}/100`:`${m[1]}/100`);evaluate();return}}else{if(fresh&&/[0-9.]/.test(v))expression='';expression+=v;display=expression;fresh=false}update()}
+export function registerCalculatorEvents(redraw:()=>void){document.addEventListener('click',e=>{const t=e.target as HTMLElement,k=t.closest<HTMLElement>('[data-calc-value]');if(k)input(k.dataset.calcValue||'');const tab=t.closest<HTMLElement>('[data-calc-mode]');if(tab){mode=tab.dataset.calcMode as Mode;redraw()}const h=t.closest<HTMLElement>('[data-history-id]');if(h){const x=history().find(v=>v.id===h.dataset.historyId);if(x){expression=String(x.result);display=fmt(x.result);fresh=true;update()}}const remove=t.closest<HTMLElement>('[data-remove-history]');if(remove){save(history().filter(x=>x.id!==remove.dataset.removeHistory));refresh()}if(t.closest('#clearCalcHistory')&&confirm('ล้างประวัติทั้งหมดหรือไม่?')){save([]);refresh()}if(t.closest('#copyCalcResult'))navigator.clipboard.writeText(expression||display).catch(()=>undefined);if(t.closest('#resultToExpense')){const amount=Number(expression);if(Number.isFinite(amount))window.dispatchEvent(new CustomEvent('calculator-create-expense',{detail:{amount,currency:resultCurrency}}))}});document.addEventListener('keydown',e=>{if(!document.querySelector('.calculator-card')||(e.target as HTMLElement).matches('input,textarea,select'))return;if(/^[-0-9.+*/()]$/.test(e.key)){e.preventDefault();input(e.key.replace('*','×').replace('/','÷'))}else if(e.key==='Enter'||e.key==='='){e.preventDefault();input('equals')}else if(e.key==='Backspace'){e.preventDefault();input('backspace')}else if(e.key==='Escape'){e.preventDefault();input('clear')}})}
