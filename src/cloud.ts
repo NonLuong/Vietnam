@@ -32,6 +32,23 @@ export function isAppData(value: unknown): value is AppData {
   )
 }
 
+export function normalizeAppData(value: AppData): AppData {
+  const days = value.days.map((day, index) => ({
+    ...day,
+    id: day.id || `day-${day.date || index}`
+  }))
+  return {
+    ...value,
+    days,
+    expenses: value.expenses.map(expense => ({
+      ...expense,
+      dayId: expense.dayId === undefined
+        ? days.find(day => day.date === expense.date)?.id || null
+        : expense.dayId
+    }))
+  }
+}
+
 export async function loadOrCreateTrip(localData: AppData): Promise<AppData> {
   const { data: row, error } = await client
     .from('trip_documents')
@@ -42,7 +59,7 @@ export async function loadOrCreateTrip(localData: AppData): Promise<AppData> {
   if (error) throw error
   if (row) {
     if (!isAppData(row.data)) throw new Error('รูปแบบข้อมูลกลางไม่ถูกต้อง')
-    return row.data
+    return normalizeAppData(row.data)
   }
 
   const { error: createError } = await client.from('trip_documents').insert({
@@ -53,13 +70,13 @@ export async function loadOrCreateTrip(localData: AppData): Promise<AppData> {
 
   if (createError?.code === '23505') return loadOrCreateTrip(localData)
   if (createError) throw createError
-  return localData
+  return normalizeAppData(localData)
 }
 
 export async function saveTrip(data: AppData): Promise<void> {
   const { error } = await client.from('trip_documents').upsert({
     slug: TRIP_SLUG,
-    data,
+    data: normalizeAppData(data),
     schema_version: SCHEMA_VERSION
   }, { onConflict: 'slug' })
   if (error) throw error
