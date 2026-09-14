@@ -2,7 +2,7 @@
 
 เอกสารนี้เป็นบันทึกส่งต่องานฉบับละเอียดสำหรับกลับมาพัฒนาโปรเจกต์ในครั้งถัดไป โดยสรุปทั้งสถานะปัจจุบัน แนวคิดการออกแบบ โครงสร้างระบบ ข้อจำกัด วิธีตรวจสอบ และวิธีเผยแพร่
 
-อัปเดตล่าสุด: 12 กันยายน 2026
+อัปเดตล่าสุด: 14 กันยายน 2026
 
 ## 1. เป้าหมายของโปรเจกต์
 
@@ -300,7 +300,7 @@ da-nang-calculator-history-v2
 - กราฟวงกลมค่าใช้จ่ายตามหมวดหมู่
 - กราฟงบประมาณเทียบค่าใช้จ่าย
 - แสดงอัตราแลกเปลี่ยน
-- มี Trip Guide Carousel 6 หน้า
+- มีปุ่ม “คู่มือทริป” สำหรับเปิดหน้า Trip Guide โดยไม่เพิ่มความแออัดใน Bottom Navigation
 - Desktop ยังแสดงภาพ Hero สะพานมังกร
 - Mobile ซ่อน Hero เพื่อให้เห็นข้อมูลสำคัญทันที
 
@@ -327,6 +327,14 @@ da-nang-calculator-history-v2
 - เมื่อแก้วันที่ของ DayPlan ค่าใช้จ่ายที่เชื่อมอยู่จะเปลี่ยนวันที่ตาม
 - เมื่อลบ DayPlan ค่าใช้จ่ายจะไม่ถูกลบ แต่ย้ายไป “ค่าใช้จ่ายนอกแผน”
 - Mobile พับรายการค่าใช้จ่ายของแต่ละวันไว้ ลดการเลื่อน
+
+### Trip Guide
+
+- เป็นหน้าแยกจาก Overview เพื่อไม่ให้หน้าแรกยาวเกินไป
+- มี Carousel คู่มือทริป 6 หน้า
+- เปิดจากปุ่ม “คู่มือทริป” ใน Overview ได้ทั้งโทรศัพท์และคอมพิวเตอร์
+- แสดงเป็นรายการใน Sidebar บนคอมพิวเตอร์
+- ไม่อยู่ใน Bottom Navigation บนโทรศัพท์ เพื่อรักษา 5 เมนูหลักไม่ให้แน่นหรือตกบรรทัด
 
 ### Calculator
 
@@ -358,7 +366,8 @@ da-nang-calculator-history-v2
 
 โทรศัพท์คือพื้นผิวหลักของโปรเจกต์ การออกแบบล่าสุดมีรายละเอียดดังนี้:
 
-- Bottom navigation 5 หน้า
+- Bottom navigation 5 หน้า: Overview, Expenses, Daily Plan, Calculator และ Settings
+- Trip Guide เปิดจากปุ่มใน Overview และไม่แย่งพื้นที่เมนูหลัก
 - ซ่อน hamburger menu บนโทรศัพท์ เพราะซ้ำกับ bottom navigation
 - ปุ่มลอย “+ ค่าใช้จ่าย” ใช้งานได้จากทุกหน้า
 - ปุ่มลอยเว้น safe area ของ iPhone
@@ -378,7 +387,7 @@ da-nang-calculator-history-v2
 
 ## 12. Trip Guide Carousel
 
-คู่มือทริป 6 หน้าอยู่ในหน้า Overview หลัง Summary cards และก่อนกราฟ
+คู่มือทริป 6 หน้าอยู่ในหน้า Trip Guide แยกต่างหาก เปิดจากปุ่มใน Overview หรือ Sidebar บนคอมพิวเตอร์
 
 ความสามารถ:
 
@@ -590,6 +599,8 @@ npm run build
 ลำดับพัฒนาหลักล่าสุด:
 
 ```text
+61adb28 feat: refine standalone Trip Guide renderer
+1ec6d13 feat: move Trip Guide to a separate navigation view and add Codex.md
 29e977b Add trip guide carousel
 5277933 Optimize primary mobile trip flows
 2cbb6b8 Add compact mobile expense cards
@@ -605,8 +616,18 @@ d6fd6b0 Expand site into Da Nang trip planner
 7abd736 Build trip budget comparison site
 ```
 
-เอกสารนี้ถูกสร้างหลัง commit `29e977b` และตัวเอกสารเองอาจอยู่ใน commit ถัดไป
+เอกสารถูกสร้างครั้งแรกหลัง commit `29e977b` และปรับให้ตรงกับโครงสร้าง Trip Guide แบบหน้าแยกในวันที่ 14 กันยายน 2026
 
 ## 25. สรุปสั้นสำหรับ Codex รอบถัดไป
 
-นี่คือ Vite + TypeScript static SPA สำหรับวางแผนงบทริปดานัง 4 คน ข้อมูลหลักซิงก์ผ่าน Supabase JSON document และสำรอง Local Storage หน้าใช้งานคือ Overview, Expenses, Daily Plan, Calculator และ Settings ระบบเน้น Mobile-first มี floating add button, expense bottom sheet, compact cards, collapsible daily details และ carousel คู่มือ 6 ภาพ เว็บไซต์ Public และเผยแพร่ผ่าน OpenAI Sites ที่ project ID เดิม ผู้ใช้ไม่ต้องการ Login และห้ามเปิด Browser ทดสอบ ให้ใช้ unit tests, TypeScript, ESLint และ production build แทน อย่าเพิ่มระบบใหม่โดยไม่มีคำขอหรือ feedback จากการใช้งานจริง
+นี่คือ Vite + TypeScript static SPA สำหรับวางแผนงบทริปดานัง 4 คน ข้อมูลหลักซิงก์ผ่าน Supabase JSON document และสำรอง Local Storage หน้าใช้งานคือ Overview, Expenses, Daily Plan, Trip Guide, Calculator และ Settings ระบบเน้น Mobile-first มี floating add button, expense bottom sheet, compact cards, collapsible daily details และ carousel คู่มือ 6 ภาพ หน้า Trip Guide แยกจาก Overview แต่ไม่อยู่ใน Bottom Navigation บนโทรศัพท์ โดยเปิดจากปุ่มใน Overview แทน เว็บไซต์ Public และเผยแพร่ผ่าน OpenAI Sites ที่ project ID เดิม ผู้ใช้ไม่ต้องการ Login และห้ามเปิด Browser ทดสอบ ให้ใช้ unit tests, TypeScript, ESLint และ production build แทน อย่าเพิ่มระบบใหม่โดยไม่มีคำขอหรือ feedback จากการใช้งานจริง
+
+## 26. การแก้สถานะงานค้างวันที่ 14 กันยายน 2026
+
+- ตรวจพบว่ามีการย้าย Trip Guide ออกจาก Overview ไปเป็นหน้าแยกไว้แล้วใน commit `1ec6d13` และปรับ renderer ต่อใน `61adb28`
+- แก้ปัญหา Bottom Navigation ซึ่งเดิมมี 6 รายการแต่ CSS รองรับเพียง 5 คอลัมน์
+- คง Trip Guide เป็นหน้าแยกและอยู่ใน Sidebar บน Desktop
+- Mobile Bottom Navigation กลับมาเหลือ 5 เมนูหลัก
+- เพิ่มปุ่ม “คู่มือทริป” ใน Overview เป็นทางเข้า Trip Guide บนโทรศัพท์
+- อัปเดตหัวข้อ Overview, Mobile UX, Trip Guide, Git History และสรุปส่งต่องานในเอกสารนี้ให้ตรงกับ Source Code
+- หลังแก้ต้องรัน Tests, Lint และ Build แล้วเผยแพร่กลับไปยัง Site project เดิม
