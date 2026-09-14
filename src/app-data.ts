@@ -1,10 +1,12 @@
 import type { AppData, TripEssential } from './types'
 
 export const initialTripEssentials: TripEssential[] = [
-  {id:'flight-outbound',kind:'flight',title:'เที่ยวบินขาไป DMK → DAD',details:'26 กันยายน 2026',bookingRef:'',address:'',phone:'',mapUrl:''},
-  {id:'flight-return',kind:'flight',title:'เที่ยวบินขากลับ DAD → DMK',details:'30 กันยายน 2026',bookingRef:'',address:'',phone:'',mapUrl:''},
-  {id:'stay-everland',kind:'stay',title:'Everland Hotel',details:'เช็กอิน 26 ก.ย. · เช็กเอาต์ 30 ก.ย.',bookingRef:'',address:'',phone:'',mapUrl:''},
-  {id:'emergency-family',kind:'emergency',title:'เบอร์ติดต่อฉุกเฉิน',details:'เพิ่มชื่อและข้อมูลที่ต้องใช้ระหว่างทริป',bookingRef:'',address:'',phone:'',mapUrl:''}
+  {id:'flight-outbound',kind:'flight',title:'AirAsia FD636 · DMK → DAD',details:'26 ก.ย. 2026 · ออก 09:50 · ถึง 11:30',bookingRef:'MEJWTW',address:'',phone:'',mapUrl:''},
+  {id:'flight-return',kind:'flight',title:'AirAsia FD639 · DAD → DMK',details:'30 ก.ย. 2026 · ออก 18:10 · ถึง 19:55',bookingRef:'MEJWTW',address:'',phone:'',mapUrl:''},
+  {id:'stay-menora-chakarin',kind:'stay',title:'Menora Premium Da Nang · ห้อง Family',details:'26–28 ก.ย. 2026 · 2 คืน · CHAKARIN SAISOK · ฿1,804.92 · เวลาเช็กอิน/เช็กเอาต์ยังไม่ได้ระบุ',bookingRef:'1622930406244223',address:'ยังไม่ได้ระบุ',phone:'',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'},
+  {id:'stay-menora-nontakarn',kind:'stay',title:'Menora Premium Da Nang · ห้อง Deluxe',details:'26–28 ก.ย. 2026 · 2 คืน · NONTAKARN SAISOK · ฿1,545.87 · เวลาเช็กอิน/เช็กเอาต์ยังไม่ได้ระบุ',bookingRef:'1622930406244227',address:'ยังไม่ได้ระบุ',phone:'',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'},
+  {id:'stay-night-3',kind:'stay',title:'ที่พักคืนที่ 3 · 28–29 ก.ย.',details:'ยังไม่ได้ระบุ',bookingRef:'',address:'ยังไม่ได้ระบุ',phone:'',mapUrl:''},
+  {id:'stay-night-4',kind:'stay',title:'ที่พักคืนที่ 4 · 29–30 ก.ย.',details:'ยังไม่ได้ระบุ',bookingRef:'',address:'ยังไม่ได้ระบุ',phone:'',mapUrl:''}
 ]
 
 export function isAppData(value: unknown): value is AppData {

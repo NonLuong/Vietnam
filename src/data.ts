@@ -4,26 +4,28 @@ import { initialTripEssentials } from './app-data'
 export const defaultData: AppData = {
   settings: {
     tripName: 'Da Nang Trip 2026', startDate: '2026-09-26', endDate: '2026-09-30', budgetTHB: 60000, exchangeRate: 760,
-    travelers: [{id:'p1',name:'นนท์'},{id:'p2',name:'ผู้เดินทาง 2'},{id:'p3',name:'ผู้เดินทาง 3'},{id:'p4',name:'ผู้เดินทาง 4'}]
+    travelers: [{id:'p1',name:'นนท์'},{id:'p2',name:'มะเหมี่ยว'},{id:'p3',name:'พ่อ'},{id:'p4',name:'แม่'}]
   },
   expenses: [
-    {id:'e1',date:'2026-09-26',dayId:'day-2026-09-26',item:'ตั๋วเครื่องบินไป–กลับ',category:'Flights',amount:20648,currency:'THB',payerId:'p1',status:'paid',note:'รวมที่นั่งและประกัน จากแผนเดิม'},
-    {id:'e2',date:'2026-09-26',dayId:'day-2026-09-26',item:'Everland Hotel',category:'Accommodation',amount:8673.24,currency:'THB',payerId:'p2',status:'paid',note:'4 คืน จากแผนเดิม'},
-    {id:'e3',date:'2026-09-26',dayId:'day-2026-09-26',item:'ที่จอดรถสนามบิน',category:'Transportation',amount:750,currency:'THB',payerId:'p1',status:'planned',note:'150 บาทต่อวัน'},
-    {id:'e4',date:'2026-09-26',dayId:'day-2026-09-26',item:'Grab สนามบิน–โรงแรม',category:'Transportation',amount:350000,currency:'VND',payerId:'p3',status:'planned',note:'ตัวเลขประมาณการ'},
-    {id:'e5',date:'2026-09-27',dayId:'day-2026-09-27',item:'อาหารและกาแฟวันแรก',category:'Food',amount:2400000,currency:'VND',payerId:'p4',status:'planned',note:'ประมาณการสำหรับ 4 คน'},
-    {id:'e6',date:'2026-09-28',dayId:'day-2026-09-28',item:'Ba Na Hills',category:'Activities',amount:5600000,currency:'VND',payerId:'p1',status:'planned',note:'งบกิจกรรมโดยประมาณ'},
-    {id:'e7',date:'2026-09-29',dayId:'day-2026-09-29',item:'ของฝาก',category:'Shopping',amount:3000,currency:'THB',payerId:'p2',status:'planned',note:'วงเงินตั้งต้น'}
+    {id:'e-sim',date:'2026-09-26',dayId:'day-2026-09-26',item:'ค่า SIM',category:'Other',amount:423.05,currency:'THB',payerId:'p1',status:'paid',note:'Viettel'},
+    {id:'e-flight',date:'2026-09-26',dayId:'day-2026-09-26',item:'ตั๋วเครื่องบิน',category:'Flights',amount:20011.28,currency:'THB',payerId:'p1',status:'paid',note:'ไป–กลับ + ที่นั่ง + ประกัน · Booking MEJWTW'},
+    {id:'e-hotel-menora',date:'2026-09-26',dayId:'day-2026-09-26',item:'ที่พักดานัง 26–28 ก.ย.',category:'Accommodation',amount:3350.79,currency:'THB',payerId:'p1',status:'paid',note:'Menora Premium Da Nang · 2 ห้อง · 2 คืน'},
+    {id:'e-parking',date:'2026-09-26',dayId:'day-2026-09-26',item:'ที่จอดรถดอนเมือง',category:'Transportation',amount:750,currency:'THB',payerId:'p1',status:'planned',note:'150 บาท / วัน'},
+    {id:'e-golden-bridge',date:'2026-09-28',dayId:'day-2026-09-28',item:'สะพานทอง',category:'Activities',amount:5600,currency:'THB',payerId:'p1',status:'planned',note:'ประมาณการ'}
   ],
   days: [
-    {id:'day-2026-09-26',date:'2026-09-26',title:'เดินทางถึงดานัง',activities:'เช็กอิน · เดินเล่นริมแม่น้ำฮัน · สะพานมังกร',budgetTHB:2200,places:[]},
-    {id:'day-2026-09-27',date:'2026-09-27',title:'เมืองเก่าและคาเฟ่',activities:'Hoi An · คาเฟ่ · อาหารเวียดนาม',budgetTHB:4500,places:[]},
-    {id:'day-2026-09-28',date:'2026-09-28',title:'Ba Na Hills',activities:'Golden Bridge · French Village',budgetTHB:7200,places:[]},
-    {id:'day-2026-09-29',date:'2026-09-29',title:'ทะเลและช้อปปิ้ง',activities:'My Khe Beach · Han Market',budgetTHB:4800,places:[]},
-    {id:'day-2026-09-30',date:'2026-09-30',title:'เช็กเอาต์และเดินทางกลับ',activities:'อาหารเช้า · สนามบิน',budgetTHB:1800,places:[]}
+    {id:'day-2026-09-26',date:'2026-09-26',title:'บินจากดอนเมืองถึงดานัง',activities:'AirAsia FD636 · ออก 09:50 · ถึง 11:30 · เช็กอิน Menora Premium',budgetTHB:2200,places:[{id:'dmk-outbound',name:'Don Mueang International Airport',address:'กรุงเทพฯ',mapUrl:'Don Mueang International Airport'},{id:'dad-arrival',name:'Da Nang International Airport',address:'Da Nang, Vietnam',mapUrl:'Da Nang International Airport'},{id:'menora-hotel',name:'Menora Premium Da Nang - Sea Corner Boutique',address:'ยังไม่ได้ระบุ',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'}]},
+    {id:'day-2026-09-27',date:'2026-09-27',title:'เมืองเก่าและคาเฟ่',activities:'พัก Menora Premium · Hoi An · คาเฟ่ · อาหารเวียดนาม',budgetTHB:4500,places:[{id:'menora-day-2',name:'Menora Premium Da Nang - Sea Corner Boutique',address:'ยังไม่ได้ระบุ',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'},{id:'hoi-an',name:'Hoi An Ancient Town',address:'Hoi An, Vietnam',mapUrl:'Hoi An Ancient Town'}]},
+    {id:'day-2026-09-28',date:'2026-09-28',title:'Ba Na Hills',activities:'Golden Bridge · French Village · ที่พักคืนที่ 3 ยังไม่ได้ระบุ',budgetTHB:7200,places:[{id:'ba-na-hills',name:'Ba Na Hills',address:'Da Nang, Vietnam',mapUrl:'Ba Na Hills'},{id:'golden-bridge',name:'Golden Bridge',address:'Ba Na Hills, Da Nang',mapUrl:'Golden Bridge Ba Na Hills'},{id:'french-village',name:'French Village',address:'Ba Na Hills, Da Nang',mapUrl:'French Village Ba Na Hills'}]},
+    {id:'day-2026-09-29',date:'2026-09-29',title:'ทะเลและช้อปปิ้ง',activities:'My Khe Beach · Han Market · ที่พักคืนที่ 4 ยังไม่ได้ระบุ',budgetTHB:4800,places:[{id:'my-khe-beach',name:'My Khe Beach',address:'Da Nang, Vietnam',mapUrl:'My Khe Beach Da Nang'},{id:'han-market',name:'Han Market',address:'Da Nang, Vietnam',mapUrl:'Han Market Da Nang'}]},
+    {id:'day-2026-09-30',date:'2026-09-30',title:'เดินทางกลับกรุงเทพฯ',activities:'AirAsia FD639 · ออก 18:10 · ถึง 19:55',budgetTHB:1800,places:[{id:'dad-departure',name:'Da Nang International Airport',address:'Da Nang, Vietnam',mapUrl:'Da Nang International Airport'},{id:'dmk-arrival',name:'Don Mueang International Airport',address:'กรุงเทพฯ',mapUrl:'Don Mueang International Airport'}]}
   ],
   tripEssentials: initialTripEssentials.map(item => ({...item})),
-  packingItems: [],
+  packingItems: [
+    {id:'packing-flight-booking',category:'documents',name:'เอกสารยืนยันเที่ยวบิน AirAsia · MEJWTW',packed:false},
+    {id:'packing-hotel-chakarin',category:'documents',name:'เอกสารจอง Menora · 1622930406244223',packed:false},
+    {id:'packing-hotel-nontakarn',category:'documents',name:'เอกสารจอง Menora · 1622930406244227',packed:false}
+  ],
   pinnedNote: ''
 }
 
