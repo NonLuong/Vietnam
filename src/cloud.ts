@@ -1,5 +1,8 @@
 import { createClient, type RealtimeChannel } from '@supabase/supabase-js'
 import type { AppData } from './types'
+import { isAppData, normalizeAppData } from './app-data'
+
+export { isAppData, normalizeAppData } from './app-data'
 
 const SUPABASE_URL = 'https://zrrdfsogkjgtwuzmviwc.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_NLZ-PVHXE-61Yxb0CwaWOQ_Buo_y7Dp'
@@ -17,37 +20,6 @@ type TripRow = {
 const client = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
 })
-
-export function isAppData(value: unknown): value is AppData {
-  if (!value || typeof value !== 'object') return false
-  const item = value as Partial<AppData>
-  return Boolean(
-    item.settings &&
-    typeof item.settings.tripName === 'string' &&
-    Number.isFinite(item.settings.budgetTHB) &&
-    Number.isFinite(item.settings.exchangeRate) &&
-    Array.isArray(item.settings.travelers) &&
-    Array.isArray(item.expenses) &&
-    Array.isArray(item.days)
-  )
-}
-
-export function normalizeAppData(value: AppData): AppData {
-  const days = value.days.map((day, index) => ({
-    ...day,
-    id: day.id || `day-${day.date || index}`
-  }))
-  return {
-    ...value,
-    days,
-    expenses: value.expenses.map(expense => ({
-      ...expense,
-      dayId: expense.dayId === undefined
-        ? days.find(day => day.date === expense.date)?.id || null
-        : expense.dayId
-    }))
-  }
-}
 
 export async function loadOrCreateTrip(localData: AppData): Promise<AppData> {
   const { data: row, error } = await client
