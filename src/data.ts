@@ -1,4 +1,5 @@
 import type { AppData } from './types'
+import { initialTripEssentials } from './app-data'
 
 export const defaultData: AppData = {
   settings: {
@@ -15,12 +16,15 @@ export const defaultData: AppData = {
     {id:'e7',date:'2026-09-29',dayId:'day-2026-09-29',item:'ของฝาก',category:'Shopping',amount:3000,currency:'THB',payerId:'p2',status:'planned',note:'วงเงินตั้งต้น'}
   ],
   days: [
-    {id:'day-2026-09-26',date:'2026-09-26',title:'เดินทางถึงดานัง',activities:'เช็กอิน · เดินเล่นริมแม่น้ำฮัน · สะพานมังกร',budgetTHB:2200},
-    {id:'day-2026-09-27',date:'2026-09-27',title:'เมืองเก่าและคาเฟ่',activities:'Hoi An · คาเฟ่ · อาหารเวียดนาม',budgetTHB:4500},
-    {id:'day-2026-09-28',date:'2026-09-28',title:'Ba Na Hills',activities:'Golden Bridge · French Village',budgetTHB:7200},
-    {id:'day-2026-09-29',date:'2026-09-29',title:'ทะเลและช้อปปิ้ง',activities:'My Khe Beach · Han Market',budgetTHB:4800},
-    {id:'day-2026-09-30',date:'2026-09-30',title:'เช็กเอาต์และเดินทางกลับ',activities:'อาหารเช้า · สนามบิน',budgetTHB:1800}
-  ]
+    {id:'day-2026-09-26',date:'2026-09-26',title:'เดินทางถึงดานัง',activities:'เช็กอิน · เดินเล่นริมแม่น้ำฮัน · สะพานมังกร',budgetTHB:2200,places:[]},
+    {id:'day-2026-09-27',date:'2026-09-27',title:'เมืองเก่าและคาเฟ่',activities:'Hoi An · คาเฟ่ · อาหารเวียดนาม',budgetTHB:4500,places:[]},
+    {id:'day-2026-09-28',date:'2026-09-28',title:'Ba Na Hills',activities:'Golden Bridge · French Village',budgetTHB:7200,places:[]},
+    {id:'day-2026-09-29',date:'2026-09-29',title:'ทะเลและช้อปปิ้ง',activities:'My Khe Beach · Han Market',budgetTHB:4800,places:[]},
+    {id:'day-2026-09-30',date:'2026-09-30',title:'เช็กเอาต์และเดินทางกลับ',activities:'อาหารเช้า · สนามบิน',budgetTHB:1800,places:[]}
+  ],
+  tripEssentials: initialTripEssentials.map(item => ({...item})),
+  packingItems: [],
+  pinnedNote: ''
 }
 
 export const transportOptions = [

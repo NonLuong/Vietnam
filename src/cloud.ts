@@ -7,7 +7,7 @@ export { isAppData, normalizeAppData } from './app-data'
 const SUPABASE_URL = 'https://zrrdfsogkjgtwuzmviwc.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_NLZ-PVHXE-61Yxb0CwaWOQ_Buo_y7Dp'
 const TRIP_SLUG = 'da-nang-trip-2026'
-const SCHEMA_VERSION = 2
+const SCHEMA_VERSION = 3
 
 type TripRow = {
   slug: string
@@ -60,7 +60,7 @@ export function subscribeToTrip(onUpdate: (data: AppData) => void): RealtimeChan
       event: '*', schema: 'public', table: 'trip_documents', filter: `slug=eq.${TRIP_SLUG}`
     }, payload => {
       const next = (payload.new as Partial<TripRow>).data
-      if (isAppData(next)) onUpdate(next)
+      if (isAppData(next)) onUpdate(normalizeAppData(next))
     })
     .subscribe()
 }
