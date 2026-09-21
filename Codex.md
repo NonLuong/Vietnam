@@ -569,9 +569,9 @@ npm run build
 7. ห้ามเปิด Browser test ตามข้อกำหนดปัจจุบัน
 8. ตรวจ `git diff --check`
 9. Commit source และ `dist/` ที่ build ล่าสุด
-10. เผยแพร่ผ่าน Sites ไป project เดิม
-11. รอ deployment status จนเป็น `succeeded`
-12. ส่ง Production URL เดิมให้ผู้ใช้พร้อมสรุปสั้น ๆ
+10. เผยแพร่ Production ผ่าน Vercel project `da-nang-trip-2026`
+11. รอ deployment status จนเป็น `READY`
+12. ส่ง `https://da-nang-trip-2026.vercel.app` ให้ผู้ใช้พร้อมสรุปสั้น ๆ
 
 ## 23. แนวทางเผยแพร่ผ่าน Sites
 
@@ -620,7 +620,7 @@ d6fd6b0 Expand site into Da Nang trip planner
 
 ## 25. สรุปสั้นสำหรับ Codex รอบถัดไป
 
-นี่คือ Vite + TypeScript static SPA สำหรับวางแผนงบทริปดานัง 4 คน ข้อมูลหลักซิงก์ผ่าน Supabase JSON document และสำรอง Local Storage หน้าใช้งานคือ Overview, Expenses, Daily Plan, Trip Guide, Calculator และ Settings ระบบเน้น Mobile-first มี floating add button, expense bottom sheet, compact cards, collapsible daily details และ carousel คู่มือ 6 ภาพ หน้า Trip Guide แยกจาก Overview แต่ไม่อยู่ใน Bottom Navigation บนโทรศัพท์ โดยเปิดจากปุ่มใน Overview แทน เว็บไซต์ Public และเผยแพร่ผ่าน OpenAI Sites ที่ project ID เดิม ผู้ใช้ไม่ต้องการ Login และห้ามเปิด Browser ทดสอบ ให้ใช้ unit tests, TypeScript, ESLint และ production build แทน อย่าเพิ่มระบบใหม่โดยไม่มีคำขอหรือ feedback จากการใช้งานจริง
+นี่คือ Vite + TypeScript static SPA สำหรับวางแผนงบทริปดานัง 4 คน ข้อมูลหลักซิงก์ผ่าน Supabase JSON document และสำรอง Local Storage หน้าใช้งานคือ Overview, Expenses, Daily Plan, Trip Guide, Calculator และ Settings ระบบเน้น Mobile-first มี floating add button, expense bottom sheet, compact cards, collapsible daily details และ carousel คู่มือ 6 ภาพ หน้า Trip Guide แยกจาก Overview แต่ไม่อยู่ใน Bottom Navigation บนโทรศัพท์ โดยเปิดจากปุ่มใน Overview แทน เว็บไซต์ Public และเผยแพร่หลักผ่าน Vercel ที่ `https://da-nang-trip-2026.vercel.app`; OpenAI Sites URL เดิมยังคงอยู่เป็นสำรอง ผู้ใช้ไม่ต้องการ Login และห้ามเปิด Browser ทดสอบ ให้ใช้ TypeScript และ production build แทน อย่าเพิ่มระบบใหม่โดยไม่มีคำขอหรือ feedback จากการใช้งานจริง
 
 ## 26. การแก้สถานะงานค้างวันที่ 14 กันยายน 2026
 
@@ -630,4 +630,15 @@ d6fd6b0 Expand site into Da Nang trip planner
 - Mobile Bottom Navigation กลับมาเหลือ 5 เมนูหลัก
 - เพิ่มปุ่ม “คู่มือทริป” ใน Overview เป็นทางเข้า Trip Guide บนโทรศัพท์
 - อัปเดตหัวข้อ Overview, Mobile UX, Trip Guide, Git History และสรุปส่งต่องานในเอกสารนี้ให้ตรงกับ Source Code
-- หลังแก้ต้องรัน Tests, Lint และ Build แล้วเผยแพร่กลับไปยัง Site project เดิม
+- ข้อความส่วนนี้เป็นประวัติของรอบเดิม; ขั้นตอนเผยแพร่ปัจจุบันให้ยึดหัวข้อ 27 และใช้ Vercel เป็น Production หลัก
+
+## 27. การย้าย Production Hosting ไป Vercel วันที่ 21 กันยายน 2026
+
+- Production หลักย้ายไป Vercel project `da-nang-trip-2026` ภายใต้ทีม `nonluongs-projects`
+- Production URL หลัก: `https://da-nang-trip-2026.vercel.app`
+- ใช้ `vercel.json` ระบุ Vite build, output `dist` และ cache policy สำหรับ HTML/hashed assets
+- `.vercel/` และ environment files เป็นข้อมูลเฉพาะเครื่องและต้องไม่ commit
+- Supabase project, schema, publishable key และข้อมูลกลางไม่เปลี่ยน การเปิดจาก Vercel จึงใช้ข้อมูลเดียวกับเว็บไซต์เดิม
+- OpenAI Sites URL เดิมยังออนไลน์เป็น fallback; ห้ามลบหรือปิดจนกว่าผู้ใช้จะสั่ง
+- ขั้นตอนเผยแพร่รอบถัดไป: `npm run build`, `vercel pull --yes --environment production`, `vercel build --yes --target production`, แล้ว `vercel deploy --prebuilt --prod --yes`
+- หลัง Deploy ต้องตรวจสถานะจาก CLI ว่า `READY`; ไม่ต้องเปิด Browser ทดสอบตามข้อกำหนดของผู้ใช้
