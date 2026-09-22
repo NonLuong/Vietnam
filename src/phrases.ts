@@ -1,22 +1,112 @@
-export const vietnamesePhraseGroups = [
-  { title: 'แท็กซี่', phrases: [
-    { thai: 'ช่วยพาไปที่นี่หน่อย', vietnamese: 'Vui lòng đưa tôi đến đây.', pronunciation: 'วุย ล่อง เดือ โตย เด๊น เดย' },
-    { thai: 'กรุณาเปิดมิเตอร์', vietnamese: 'Vui lòng bật đồng hồ.', pronunciation: 'วุย ล่อง บัด ด่ง โห่' }
-  ]},
-  { title: 'โรงแรม', phrases: [
-    { thai: 'ฉันมีการจองแล้ว', vietnamese: 'Tôi đã đặt phòng.', pronunciation: 'โตย ด๋า ดัด ฝ่อง' },
-    { thai: 'ฝากกระเป๋าไว้ได้ไหม', vietnamese: 'Tôi có thể gửi hành lý ở đây không?', pronunciation: 'โตย ก๊อ เถ่ กื๋ย แห่ง ลี้ เอ๋อ เดย คง' }
-  ]},
-  { title: 'ร้านอาหาร', phrases: [
-    { thai: 'ไม่เผ็ด', vietnamese: 'Không cay.', pronunciation: 'คง ไก' },
-    { thai: 'ขอเมนูภาษาอังกฤษ', vietnamese: 'Cho tôi thực đơn tiếng Anh.', pronunciation: 'จอ โตย ถึก เดิน เตี๊ยง แอง' }
-  ]},
-  { title: 'ถามราคา', phrases: [
-    { thai: 'ราคาเท่าไร', vietnamese: 'Bao nhiêu tiền?', pronunciation: 'บาว เญียว เตี่ยน' },
-    { thai: 'จ่ายด้วยบัตรได้ไหม', vietnamese: 'Có thể thanh toán bằng thẻ không?', pronunciation: 'ก๊อ เถ่ แถ่ง ตว๊าน บั่ง แถ่ คง' }
-  ]},
-  { title: 'เหตุฉุกเฉิน', phrases: [
-    { thai: 'ช่วยด้วย', vietnamese: 'Cứu tôi với!', pronunciation: 'กื๊ว โตย เว้ย' },
-    { thai: 'กรุณาเรียกรถพยาบาล', vietnamese: 'Vui lòng gọi xe cấp cứu.', pronunciation: 'วุย ล่อง ก่อย แซ เกิ๊บ กื๊ว' }
-  ]}
+export const vietnamesePhraseCategories = [
+  { id: 'common', label: 'ใช้บ่อย' },
+  { id: 'numbers', label: 'ตัวเลข' },
+  { id: 'food', label: 'อาหาร' },
+  { id: 'quantity', label: 'จำนวนและหน่วย' },
+  { id: 'shopping', label: 'ซื้อของ' },
+  { id: 'travel', label: 'เดินทาง' },
+  { id: 'conversation', label: 'คำชมและสนทนา' },
+  { id: 'emergency', label: 'ฉุกเฉิน' }
 ] as const
+
+export type VietnamesePhraseCategory = typeof vietnamesePhraseCategories[number]['id']
+
+export type VietnamesePhrase = {
+  category: VietnamesePhraseCategory
+  thai: string
+  vietnamese: string
+  pronunciation: string
+  keywords?: string
+  featured?: boolean
+}
+
+export const vietnamesePhrases: VietnamesePhrase[] = [
+  { category: 'common', thai: 'สวัสดี', vietnamese: 'Xin chào.', pronunciation: 'ซิน จ่าว', featured: true },
+  { category: 'common', thai: 'ขอบคุณ', vietnamese: 'Cảm ơn.', pronunciation: 'ก๋าม เอิน', featured: true },
+  { category: 'common', thai: 'ขอโทษ', vietnamese: 'Xin lỗi.', pronunciation: 'ซิน โหล่ย' },
+  { category: 'common', thai: 'ไม่เป็นไร', vietnamese: 'Không sao.', pronunciation: 'คง ซาว' },
+  { category: 'common', thai: 'ใช่ / ถูกต้อง', vietnamese: 'Đúng rồi.', pronunciation: 'ดุ๊ง โหร่ย' },
+  { category: 'common', thai: 'ไม่ใช่', vietnamese: 'Không phải.', pronunciation: 'คง ฝ่าย' },
+  { category: 'common', thai: 'ฉันไม่เข้าใจ', vietnamese: 'Tôi không hiểu.', pronunciation: 'โตย คง เหียว' },
+  { category: 'common', thai: 'พูดช้า ๆ ได้ไหม', vietnamese: 'Bạn nói chậm lại được không?', pronunciation: 'บ่าน น้อย เจิ่ม หล่าย เดือก คง' },
+  { category: 'common', thai: 'ช่วยฉันหน่อย', vietnamese: 'Giúp tôi với.', pronunciation: 'ซู้ป โตย เว้ย' },
+  { category: 'common', thai: 'ห้องน้ำอยู่ที่ไหน', vietnamese: 'Nhà vệ sinh ở đâu?', pronunciation: 'หญ่า เวะ ซิง เอ๋อ เดิว', featured: true },
+  { category: 'numbers', thai: '0 · ศูนย์', vietnamese: 'Không', pronunciation: 'คง', keywords: 'เลข' },
+  { category: 'numbers', thai: '1 · หนึ่ง', vietnamese: 'Một', pronunciation: 'หมด', keywords: 'เลข' },
+  { category: 'numbers', thai: '2 · สอง', vietnamese: 'Hai', pronunciation: 'ฮาย', keywords: 'เลข' },
+  { category: 'numbers', thai: '3 · สาม', vietnamese: 'Ba', pronunciation: 'บา', keywords: 'เลข' },
+  { category: 'numbers', thai: '4 · สี่', vietnamese: 'Bốn', pronunciation: 'โบ๊น', keywords: 'เลข' },
+  { category: 'numbers', thai: '5 · ห้า', vietnamese: 'Năm', pronunciation: 'นัม', keywords: 'เลข' },
+  { category: 'numbers', thai: '6 · หก', vietnamese: 'Sáu', pronunciation: 'เซ้า', keywords: 'เลข' },
+  { category: 'numbers', thai: '7 · เจ็ด', vietnamese: 'Bảy', pronunciation: 'ไบ๋', keywords: 'เลข' },
+  { category: 'numbers', thai: '8 · แปด', vietnamese: 'Tám', pronunciation: 'ต๊าม', keywords: 'เลข' },
+  { category: 'numbers', thai: '9 · เก้า', vietnamese: 'Chín', pronunciation: 'จี๊น', keywords: 'เลข' },
+  { category: 'numbers', thai: '10 · สิบ', vietnamese: 'Mười', pronunciation: 'เหมื่อย', keywords: 'เลข' },
+  { category: 'numbers', thai: '20 · ยี่สิบ', vietnamese: 'Hai mươi', pronunciation: 'ฮาย เหมื่อย', keywords: 'เลข' },
+  { category: 'numbers', thai: '30 · สามสิบ', vietnamese: 'Ba mươi', pronunciation: 'บา เหมื่อย', keywords: 'เลข' },
+  { category: 'numbers', thai: '40 · สี่สิบ', vietnamese: 'Bốn mươi', pronunciation: 'โบ๊น เหมื่อย', keywords: 'เลข' },
+  { category: 'numbers', thai: '50 · ห้าสิบ', vietnamese: 'Năm mươi', pronunciation: 'นัม เหมื่อย', keywords: 'เลข' },
+  { category: 'numbers', thai: '100 · หนึ่งร้อย', vietnamese: 'Một trăm', pronunciation: 'หมด จัม', keywords: 'เลข' },
+  { category: 'numbers', thai: '1,000 · หนึ่งพัน', vietnamese: 'Một nghìn', pronunciation: 'หมด หงิ่น', keywords: 'เลข' },
+  { category: 'food', thai: 'ขอดูเมนูหน่อย', vietnamese: 'Cho tôi xem thực đơn.', pronunciation: 'จอ โตย แซม ถึก เดิน' },
+  { category: 'food', thai: 'เอาเมนูนี้', vietnamese: 'Tôi lấy món này.', pronunciation: 'โตย ไล้ ม้อน ไหน่', featured: true },
+  { category: 'food', thai: 'ขอข้าวหนึ่งที่', vietnamese: 'Cho tôi một phần cơm.', pronunciation: 'จอ โตย หมด เฝิ่น เกิม' },
+  { category: 'food', thai: 'ไม่เผ็ด', vietnamese: 'Không cay.', pronunciation: 'คง ไก', featured: true },
+  { category: 'food', thai: 'เผ็ดน้อย', vietnamese: 'Ít cay thôi.', pronunciation: 'อี๊ด ไก โทย' },
+  { category: 'food', thai: 'ไม่ใส่ผักชี', vietnamese: 'Không cho rau mùi.', pronunciation: 'คง จอ ซาว หมุ่ย' },
+  { category: 'food', thai: 'ไม่ใส่น้ำแข็ง', vietnamese: 'Không đá.', pronunciation: 'คง ด๊า' },
+  { category: 'food', thai: 'ขอน้ำเปล่าหนึ่งขวด', vietnamese: 'Cho tôi một chai nước lọc.', pronunciation: 'จอ โตย หมด จาย เนื้อก หลอก' },
+  { category: 'food', thai: 'มีอาหารมังสวิรัติไหม', vietnamese: 'Có món chay không?', pronunciation: 'ก๊อ ม้อน จาย คง' },
+  { category: 'food', thai: 'ฉันแพ้อาหาร', vietnamese: 'Tôi bị dị ứng thức ăn.', pronunciation: 'โตย บิ ยิ อึ๊ง ถึก อัน' },
+  { category: 'food', thai: 'ขอช้อนและส้อม', vietnamese: 'Cho tôi muỗng và nĩa.', pronunciation: 'จอ โตย เหมือง หว่า เหนี๋ย' },
+  { category: 'food', thai: 'คิดเงินด้วย', vietnamese: 'Tính tiền giúp tôi.', pronunciation: 'ติ๊ง เตี่ยน ซู้ป โตย' },
+  { category: 'food', thai: 'อร่อยมาก', vietnamese: 'Rất ngon.', pronunciation: 'เสิด งอน', featured: true },
+  { category: 'quantity', thai: 'เอาหนึ่งอัน', vietnamese: 'Cho tôi một cái.', pronunciation: 'จอ โตย หมด ก๊าย' },
+  { category: 'quantity', thai: 'เอาสองอัน', vietnamese: 'Cho tôi hai cái.', pronunciation: 'จอ โตย ฮาย ก๊าย' },
+  { category: 'quantity', thai: 'เอาหนึ่งชิ้น', vietnamese: 'Cho tôi một miếng.', pronunciation: 'จอ โตย หมด เมี้ยง' },
+  { category: 'quantity', thai: 'เอาสองชิ้น', vietnamese: 'Cho tôi hai miếng.', pronunciation: 'จอ โตย ฮาย เมี้ยง' },
+  { category: 'quantity', thai: 'หนึ่งที่ / หนึ่งชุด', vietnamese: 'Một phần', pronunciation: 'หมด เฝิ่น' },
+  { category: 'quantity', thai: 'สองที่ / สองชุด', vietnamese: 'Hai phần', pronunciation: 'ฮาย เฝิ่น' },
+  { category: 'quantity', thai: 'หนึ่งขวด', vietnamese: 'Một chai', pronunciation: 'หมด จาย' },
+  { category: 'quantity', thai: 'สองขวด', vietnamese: 'Hai chai', pronunciation: 'ฮาย จาย' },
+  { category: 'quantity', thai: 'หนึ่งแก้ว', vietnamese: 'Một ly', pronunciation: 'หมด ลี' },
+  { category: 'quantity', thai: 'สองแก้ว', vietnamese: 'Hai ly', pronunciation: 'ฮาย ลี' },
+  { category: 'quantity', thai: 'ขอเพิ่มอีกหนึ่งอัน', vietnamese: 'Thêm một cái nữa.', pronunciation: 'เท็ม หมด ก๊าย เหนื่อ' },
+  { category: 'quantity', thai: 'พอแล้ว', vietnamese: 'Đủ rồi.', pronunciation: 'ดู๋ โหร่ย' },
+  { category: 'shopping', thai: 'ราคาเท่าไหร่', vietnamese: 'Bao nhiêu tiền?', pronunciation: 'บาว เญียว เตี่ยน' },
+  { category: 'shopping', thai: 'แพงเกินไป', vietnamese: 'Đắt quá.', pronunciation: 'ดั๊ด กว๊า' },
+  { category: 'shopping', thai: 'ลดราคาได้ไหม', vietnamese: 'Giảm giá được không?', pronunciation: 'ส่าม สา เดือก คง' },
+  { category: 'shopping', thai: 'เอาอันนี้', vietnamese: 'Tôi lấy cái này.', pronunciation: 'โตย ไล้ ก๊าย ไหน่' },
+  { category: 'shopping', thai: 'ไม่เอาอันนี้', vietnamese: 'Tôi không lấy cái này.', pronunciation: 'โตย คง ไล้ ก๊าย ไหน่' },
+  { category: 'shopping', thai: 'มีสีอื่นไหม', vietnamese: 'Có màu khác không?', pronunciation: 'ก๊อ เหม่า ค้าก คง' },
+  { category: 'shopping', thai: 'มีไซซ์ใหญ่กว่านี้ไหม', vietnamese: 'Có cỡ lớn hơn không?', pronunciation: 'ก๊อ เก๋อ เลิ้น เฮิน คง' },
+  { category: 'shopping', thai: 'มีไซซ์เล็กกว่านี้ไหม', vietnamese: 'Có cỡ nhỏ hơn không?', pronunciation: 'ก๊อ เก๋อ หญ๋อ เฮิน คง' },
+  { category: 'shopping', thai: 'จ่ายด้วยบัตรได้ไหม', vietnamese: 'Có thể thanh toán bằng thẻ không?', pronunciation: 'ก๊อ เถ่ แถ่ง ตว๊าน บั่ง แถ่ คง' },
+  { category: 'shopping', thai: 'จ่ายเงินสด', vietnamese: 'Thanh toán bằng tiền mặt.', pronunciation: 'แถ่ง ตว๊าน บั่ง เตี่ยน หมัด' },
+  { category: 'travel', thai: 'ช่วยพาไปที่นี่หน่อย', vietnamese: 'Vui lòng đưa tôi đến đây.', pronunciation: 'วุย ล่อง เดือ โตย เด๊น เดย' },
+  { category: 'travel', thai: 'กรุณาเปิดมิเตอร์', vietnamese: 'Vui lòng bật đồng hồ tính tiền.', pronunciation: 'วุย ล่อง บัด ด่ง โห่ ติ๊ง เตี่ยน' },
+  { category: 'travel', thai: 'จอดตรงนี้', vietnamese: 'Dừng ở đây.', pronunciation: 'สึ่ง เอ๋อ เดย' },
+  { category: 'travel', thai: 'ไกลไหม', vietnamese: 'Có xa không?', pronunciation: 'ก๊อ ซา คง' },
+  { category: 'travel', thai: 'ใช้เวลานานเท่าไหร่', vietnamese: 'Mất bao lâu?', pronunciation: 'เมิ๊ด บาว เลิว' },
+  { category: 'travel', thai: 'สนามบิน', vietnamese: 'Sân bay', pronunciation: 'เซิน บาย' },
+  { category: 'travel', thai: 'โรงแรม', vietnamese: 'Khách sạn', pronunciation: 'แค้ก ส่าน' },
+  { category: 'travel', thai: 'ทางเข้า', vietnamese: 'Lối vào', pronunciation: 'โหล่ย หว่าว' },
+  { category: 'travel', thai: 'ทางออก', vietnamese: 'Lối ra', pronunciation: 'โหล่ย ซา' },
+  { category: 'conversation', thai: 'สวยมาก', vietnamese: 'Rất đẹp.', pronunciation: 'เสิด แด็บ' },
+  { category: 'conversation', thai: 'น่ารักมาก', vietnamese: 'Rất dễ thương.', pronunciation: 'เสิด เหย เถือง' },
+  { category: 'conversation', thai: 'ดีมาก', vietnamese: 'Rất tốt.', pronunciation: 'เสิด โต๊ด' },
+  { category: 'conversation', thai: 'สนุกมาก', vietnamese: 'Rất vui.', pronunciation: 'เสิด วุย' },
+  { category: 'conversation', thai: 'ฉันชอบ', vietnamese: 'Tôi thích.', pronunciation: 'โตย ทิก' },
+  { category: 'conversation', thai: 'ช่วยถ่ายรูปให้หน่อยได้ไหม', vietnamese: 'Bạn chụp ảnh giúp tôi được không?', pronunciation: 'บ่าน จุบ แอ๋ง ซู้ป โตย เดือก คง' },
+  { category: 'conversation', thai: 'ครอบครัว', vietnamese: 'Gia đình', pronunciation: 'ซา ดิ่ญ' },
+  { category: 'conversation', thai: 'ยินดีที่ได้รู้จัก', vietnamese: 'Rất vui được gặp bạn.', pronunciation: 'เสิด วุย เดือก กับ บ่าน' },
+  { category: 'conversation', thai: 'ลาก่อน', vietnamese: 'Tạm biệt.', pronunciation: 'ต่าม เบียด' },
+  { category: 'emergency', thai: 'ช่วยด้วย', vietnamese: 'Cứu tôi với!', pronunciation: 'กื๊ว โตย เว้ย' },
+  { category: 'emergency', thai: 'ช่วยเรียกตำรวจ', vietnamese: 'Gọi cảnh sát giúp tôi.', pronunciation: 'ก่อย แก๋ง ซ้าด ซู้ป โตย' },
+  { category: 'emergency', thai: 'ช่วยเรียกรถพยาบาล', vietnamese: 'Gọi xe cấp cứu giúp tôi.', pronunciation: 'ก่อย แซ เกิ๊บ กื๊ว ซู้ป โตย' },
+  { category: 'emergency', thai: 'โรงพยาบาล', vietnamese: 'Bệnh viện', pronunciation: 'เบ่ญ เวี่ยน' },
+  { category: 'emergency', thai: 'ร้านขายยา', vietnamese: 'Nhà thuốc', pronunciation: 'หญ่า ทวก' },
+  { category: 'emergency', thai: 'ฉันต้องการหมอ', vietnamese: 'Tôi cần bác sĩ.', pronunciation: 'โตย เกิ่น บ๊าก สี' },
+  { category: 'emergency', thai: 'กระเป๋าฉันหาย', vietnamese: 'Tôi bị mất túi.', pronunciation: 'โตย บิ เมิ๊ด ตุ๋ย' },
+  { category: 'emergency', thai: 'ฉันหลงทาง', vietnamese: 'Tôi bị lạc.', pronunciation: 'โตย บิ หลาก' }
+]
