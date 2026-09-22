@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
-import { hasValidDocumentSession } from './_document-auth'
-import { documentPaths } from './_trip-document-paths'
+import { hasValidDocumentSession } from './_document-auth.js'
+import { documentPaths } from './_trip-document-paths.js'
 
 export async function GET(request: Request) {
   if (!hasValidDocumentSession(request)) return Response.json({error:'Unauthorized'}, {status:401})

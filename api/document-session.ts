@@ -1,4 +1,4 @@
-import { createSessionCookie, verifyPin } from './_document-auth'
+import { createSessionCookie, verifyPin } from './_document-auth.js'
 
 export async function POST(request: Request) {
   if (!process.env.TRIP_DOCUMENT_PIN_HASH || !process.env.TRIP_DOCUMENT_SESSION_SECRET) {
