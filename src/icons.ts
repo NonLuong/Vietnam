@@ -16,6 +16,7 @@ const paths: Record<string, string> = {
   edit:'<path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4z"/>', trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/>',
   wallet:'<path d="M4 5h14a2 2 0 0 1 2 2v12H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM16 13h4"/>',
   plane:'<path d="M10 18l-7 3v-2l4-3v-5L2 8V6l8 3 5-7h2l-2 8 6 3v2l-6 1 2 6h-2z"/>',
-  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>', close:'<path d="M6 6l12 12M18 6L6 18"/>', check:'<path d="M5 12l5 5L20 7"/>'
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>', close:'<path d="M6 6l12 12M18 6L6 18"/>', check:'<path d="M5 12l5 5L20 7"/>',
+  rotate:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 9A7 7 0 0 1 18.5 6.5L20 8M4 16l1.5 1.5A7 7 0 0 0 17.9 15"/>'
 }
 export function icon(name: string, size=20){return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.overview}</svg>`}

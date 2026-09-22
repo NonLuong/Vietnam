@@ -9,6 +9,6 @@ export type DayPlan = { id: string; date: string; title: string; activities: str
 export type TripEssentialKind = 'flight' | 'stay' | 'emergency'
 export type TripEssential = { id: string; kind: TripEssentialKind; title: string; details: string; bookingRef: string; address: string; phone: string; mapUrl: string }
 export type PackingCategory = 'documents' | 'clothes' | 'medicine' | 'equipment' | 'personal'
-export type PackingItem = { id: string; category: PackingCategory; name: string; packed: boolean }
+export type PackingItem = { id: string; ownerId: string; category: PackingCategory; name: string; packed: boolean }
 export type Settings = { tripName: string; startDate: string; endDate: string; budgetTHB: number; exchangeRate: number; travelers: Person[] }
 export type AppData = { settings: Settings; expenses: Expense[]; days: DayPlan[]; tripEssentials: TripEssential[]; packingItems: PackingItem[]; pinnedNote: string }

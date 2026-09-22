@@ -22,9 +22,9 @@ export const defaultData: AppData = {
   ],
   tripEssentials: initialTripEssentials.map(item => ({...item})),
   packingItems: [
-    {id:'packing-flight-booking',category:'documents',name:'เอกสารยืนยันเที่ยวบิน AirAsia · MEJWTW',packed:false},
-    {id:'packing-hotel-chakarin',category:'documents',name:'เอกสารจอง Menora · 1622930406244223',packed:false},
-    {id:'packing-hotel-nontakarn',category:'documents',name:'เอกสารจอง Menora · 1622930406244227',packed:false}
+    {id:'packing-flight-booking',ownerId:'p1',category:'documents',name:'เอกสารยืนยันเที่ยวบิน AirAsia · MEJWTW',packed:false},
+    {id:'packing-hotel-chakarin',ownerId:'p1',category:'documents',name:'เอกสารจอง Menora · 1622930406244223',packed:false},
+    {id:'packing-hotel-nontakarn',ownerId:'p1',category:'documents',name:'เอกสารจอง Menora · 1622930406244227',packed:false}
   ],
   pinnedNote: ''
 }

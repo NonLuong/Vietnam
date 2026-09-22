@@ -38,7 +38,10 @@ export function normalizeAppData(value: AppData): AppData {
     ...value,
     days,
     tripEssentials: Array.isArray(value.tripEssentials) ? value.tripEssentials : initialTripEssentials.map(item => ({...item})),
-    packingItems: Array.isArray(value.packingItems) ? value.packingItems : [],
+    packingItems: Array.isArray(value.packingItems) ? value.packingItems.map(item => ({
+      ...item,
+      ownerId: typeof item.ownerId === 'string' && item.ownerId ? item.ownerId : 'p1'
+    })) : [],
     pinnedNote: typeof value.pinnedNote === 'string' ? value.pinnedNote : '',
     expenses: value.expenses.map(expense => ({
       ...expense,

@@ -7,7 +7,7 @@ export { isAppData, normalizeAppData } from './app-data'
 const SUPABASE_URL = 'https://zrrdfsogkjgtwuzmviwc.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_NLZ-PVHXE-61Yxb0CwaWOQ_Buo_y7Dp'
 const TRIP_SLUG = 'da-nang-trip-2026'
-const SCHEMA_VERSION = 3
+const SCHEMA_VERSION = 4
 
 type TripRow = {
   slug: string
