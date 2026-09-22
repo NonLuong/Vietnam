@@ -1,5 +1,5 @@
-const CACHE_NAME = 'da-nang-trip-shell-v1'
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/app-icon.svg', '/fonts/NotoSansThai-Variable.ttf']
+const CACHE_NAME = 'da-nang-trip-shell-v2'
+const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/app-icon.svg', '/app-icon-192.png', '/app-icon-512.png', '/apple-touch-icon.png', '/fonts/NotoSansThai-Variable.ttf']
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()))
