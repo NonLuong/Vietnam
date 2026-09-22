@@ -11,24 +11,25 @@ let viewer: {document: TripDocument; url: string} | null = null
 let unlockOpen = false
 let pendingAction: PendingAction = null
 let busy = false
+let progress = {label: '', current: 0, total: 0}
 
 const esc = (value: string) => value.replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character] as string))
 
 function documentCard(document: TripDocument) {
   const offline = offlineIds?.has(document.id) || false
   return `<article class="trip-document-card">
-    <button class="trip-document-main" type="button" data-open-trip-document="${document.id}">
+    <button class="trip-document-main" type="button" data-open-trip-document="${document.id}" ${busy?'disabled':''}>
       <span class="trip-document-icon">${icon('file')}</span>
       <span><strong>${esc(document.title)}</strong><small>${esc(document.description)}</small>${document.groupName?`<small>${esc(document.groupName)}</small>`:''}</span>
       <span class="document-chevron" aria-hidden="true">›</span>
     </button>
     <div class="trip-document-meta"><span>${document.owners.map(owner=>`<span class="tag">${esc(owner)}</span>`).join('')}</span><span class="offline-badge ${offline?'ready':''}">${offline?icon('check',16):icon('download',16)} ${offline?'พร้อมใช้ออฟไลน์':'ยังไม่ได้เก็บในเครื่อง'}</span></div>
-    <div class="trip-document-actions"><button class="btn compact" type="button" data-download-trip-document="${document.id}">${icon('download',18)} ${offline?'อัปเดตไฟล์':'เก็บไว้ออฟไลน์'}</button>${offline?`<button class="btn compact" type="button" data-remove-trip-document="${document.id}">เอาออกจากเครื่อง</button>`:''}</div>
+    <div class="trip-document-actions"><button class="btn compact" type="button" data-download-trip-document="${document.id}" ${busy?'disabled':''}>${icon('download',18)} ${offline?'อัปเดตไฟล์':'เก็บไว้ออฟไลน์'}</button>${offline?`<button class="btn compact" type="button" data-remove-trip-document="${document.id}" ${busy?'disabled':''}>เอาออกจากเครื่อง</button>`:''}</div>
   </article>`
 }
 
 function unlockDialog() {
-  return `<div class="modal-backdrop document-unlock-backdrop"><form class="modal small-modal document-unlock" id="documentUnlockForm" role="dialog" aria-modal="true" aria-labelledby="documentUnlockTitle"><div class="modal-head"><div><h2 id="documentUnlockTitle">เปิดเอกสารส่วนตัว</h2><p>ใส่ PIN เอกสารครั้งเดียว อุปกรณ์นี้จะจดจำการเข้าถึงไว้</p></div><button class="icon-btn" type="button" data-close-document-unlock aria-label="ปิด">${icon('close')}</button></div><label class="field"><span>PIN เอกสาร</span><input class="input" id="documentPin" type="password" inputmode="numeric" autocomplete="current-password" required autofocus></label><div class="modal-actions"><button class="btn" type="button" data-close-document-unlock>ยกเลิก</button><button class="btn primary" type="submit">ยืนยัน</button></div></form></div>`
+  return `<div class="modal-backdrop document-unlock-backdrop"><form class="modal small-modal document-unlock" id="documentUnlockForm" role="dialog" aria-modal="true" aria-labelledby="documentUnlockTitle"><div class="modal-head"><div><h2 id="documentUnlockTitle">เปิดเอกสารส่วนตัว</h2><p>ใส่ PIN เอกสารครั้งเดียว อุปกรณ์นี้จะจดจำการเข้าถึงไว้</p></div><button class="icon-btn" type="button" data-close-document-unlock aria-label="ปิด" ${busy?'disabled':''}>${icon('close')}</button></div><label class="field"><span>PIN เอกสาร</span><input class="input" id="documentPin" type="password" inputmode="numeric" autocomplete="current-password" required autofocus ${busy?'disabled':''}></label>${busy?`<p class="document-busy-message" role="status">${esc(progress.label||'กำลังตรวจสอบ PIN…')}</p>`:''}<div class="modal-actions"><button class="btn" type="button" data-close-document-unlock ${busy?'disabled':''}>ยกเลิก</button><button class="btn primary" type="submit" ${busy?'disabled':''}>${busy?'กำลังตรวจสอบ…':'ยืนยัน'}</button></div></form></div>`
 }
 
 function viewerDialog() {
@@ -39,8 +40,9 @@ function viewerDialog() {
 export function renderTripDocuments() {
   const visible = selectedCategory === 'all' ? tripDocuments : tripDocuments.filter(document => document.category === selectedCategory)
   const ready = offlineIds?.size || 0
+  const progressValue = busy && progress.total ? progress.current / progress.total * 100 : ready / tripDocuments.length * 100
   return `<div class="page-head"><div><h1>เอกสารทริป</h1><p>ตั๋ว การจอง และประกันที่จำเป็นระหว่างเดินทาง</p></div><div class="actions"><button class="btn" type="button" data-back-from-documents>กลับ</button><button class="btn primary" type="button" data-download-all-documents ${busy?'disabled':''}>${icon('download')} เก็บทั้งหมดไว้ออฟไลน์</button></div></div>
-  <section class="card document-offline-summary"><span class="document-summary-icon">${icon('file')}</span><div><strong>เอกสารพร้อมใช้ในเครื่อง ${ready} / ${tripDocuments.length} ไฟล์</strong><small>ดาวน์โหลดไว้ก่อนเดินทาง เพื่อเปิดดูได้แม้ไม่มีอินเทอร์เน็ต</small></div><div class="document-progress" aria-label="ดาวน์โหลดแล้ว ${ready} จาก ${tripDocuments.length}"><span style="width:${ready/tripDocuments.length*100}%"></span></div></section>
+  <section class="card document-offline-summary" aria-live="polite"><span class="document-summary-icon">${icon('file')}</span><div><strong>${busy?esc(progress.label):`เอกสารพร้อมใช้ในเครื่อง ${ready} / ${tripDocuments.length} ไฟล์`}</strong><small>${busy&&progress.total?`ดำเนินการแล้ว ${progress.current} จาก ${progress.total} ไฟล์`:'ดาวน์โหลดไว้ก่อนเดินทาง เพื่อเปิดดูได้แม้ไม่มีอินเทอร์เน็ต'}</small></div><div class="document-progress" aria-label="${busy?esc(progress.label):`ดาวน์โหลดแล้ว ${ready} จาก ${tripDocuments.length}`}"><span style="width:${progressValue}%"></span></div></section>
   <nav class="document-categories" aria-label="หมวดเอกสาร"><button type="button" class="${selectedCategory==='all'?'active':''}" data-document-category="all"><strong>ทั้งหมด</strong><small>${tripDocuments.length} ไฟล์</small></button>${tripDocumentCategories.map(category=>`<button type="button" class="${selectedCategory===category.id?'active':''}" data-document-category="${category.id}"><span>${icon(category.icon)}</span><strong>${category.label}</strong><small>${tripDocuments.filter(document=>document.category===category.id).length} ไฟล์</small></button>`).join('')}</nav>
   <section class="document-list" aria-live="polite">${visible.map(documentCard).join('')}</section>${unlockOpen?unlockDialog():''}${viewerDialog()}`
 }
@@ -59,10 +61,21 @@ async function runAction(action: Exclude<PendingAction, null>, options: BindOpti
   const document = 'id' in action ? tripDocuments.find(item=>item.id===action.id) : null
   try {
     busy = true
+    progress = action.kind === 'download-all'
+      ? {label:`กำลังเตรียมเก็บเอกสาร 0 / ${tripDocuments.length} ไฟล์…`,current:0,total:tripDocuments.length}
+      : {label:`${action.kind==='open'?'กำลังเปิด':'กำลังเก็บ'} ${document?.title||'เอกสาร'}…`,current:0,total:1}
     options.render()
     if (action.kind === 'download-all') {
-      for (const item of tripDocuments) await storeDocument(item.id, item.version, await fetchDocument(item))
-      offlineIds = await listStoredDocumentIds()
+      for (let index = 0; index < tripDocuments.length; index += 1) {
+        const item = tripDocuments[index]
+        progress = {label:`กำลังเก็บ ${item.title}…`,current:index,total:tripDocuments.length}
+        options.render()
+        await storeDocument(item.id, item.version, await fetchDocument(item))
+        if (!offlineIds) offlineIds = new Set()
+        offlineIds.add(item.id)
+        progress = {label:`เก็บเอกสารแล้ว ${index+1} / ${tripDocuments.length} ไฟล์`,current:index+1,total:tripDocuments.length}
+        options.render()
+      }
       options.toast('เก็บเอกสารทั้งหมดไว้ในเครื่องแล้ว')
     } else if (document) {
       const stored = await getStoredDocument(document.id, document.version)
@@ -70,10 +83,12 @@ async function runAction(action: Exclude<PendingAction, null>, options: BindOpti
       if (action.kind === 'download') {
         await storeDocument(document.id, document.version, blob)
         offlineIds = await listStoredDocumentIds()
+        progress = {label:`เก็บ ${document.title} ไว้ในเครื่องแล้ว`,current:1,total:1}
         options.toast('เก็บเอกสารไว้ใช้ออฟไลน์แล้ว')
       } else {
         if (viewer) URL.revokeObjectURL(viewer.url)
         viewer = {document,url:URL.createObjectURL(blob)}
+        progress = {label:`เปิด ${document.title} แล้ว`,current:1,total:1}
       }
     }
   } catch (error) {
@@ -86,6 +101,7 @@ async function runAction(action: Exclude<PendingAction, null>, options: BindOpti
     else options.toast('เปิดเอกสารไม่สำเร็จ กรุณาลองอีกครั้ง','error')
   } finally {
     busy = false
+    progress = {label:'',current:0,total:0}
     options.render()
   }
 }
@@ -100,7 +116,7 @@ export function bindTripDocuments(options: BindOptions) {
   document.querySelectorAll<HTMLElement>('[data-remove-trip-document]').forEach(button=>button.addEventListener('click',async()=>{await removeStoredDocument(button.dataset.removeTripDocument||'');offlineIds=await listStoredDocumentIds();options.render();options.toast('เอาเอกสารออกจากเครื่องแล้ว')}))
   document.querySelectorAll('[data-close-document-unlock]').forEach(button=>button.addEventListener('click',()=>{unlockOpen=false;pendingAction=null;options.render()}))
   document.querySelector('[data-close-document-viewer]')?.addEventListener('click',()=>{if(viewer)URL.revokeObjectURL(viewer.url);viewer=null;options.render()})
-  document.querySelector<HTMLFormElement>('#documentUnlockForm')?.addEventListener('submit',async event=>{event.preventDefault();const pin=document.querySelector<HTMLInputElement>('#documentPin')?.value||'';busy=true;try{const response=await fetch('/api/document-session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pin}),credentials:'same-origin'});if(!response.ok){options.toast(response.status===401?'PIN ไม่ถูกต้อง':'ยังเปิดระบบเอกสารไม่ได้','error');return}const action=pendingAction;pendingAction=null;unlockOpen=false;if(action)await runAction(action,options)}catch{options.toast('เชื่อมต่อระบบเอกสารไม่ได้','error')}finally{busy=false;options.render()}})
+  document.querySelector<HTMLFormElement>('#documentUnlockForm')?.addEventListener('submit',async event=>{event.preventDefault();const pin=document.querySelector<HTMLInputElement>('#documentPin')?.value||'';busy=true;progress={label:'กำลังตรวจสอบ PIN…',current:0,total:0};options.render();try{const response=await fetch('/api/document-session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pin}),credentials:'same-origin'});if(!response.ok){options.toast(response.status===401?'PIN ไม่ถูกต้อง':'ยังเปิดระบบเอกสารไม่ได้','error');return}const action=pendingAction;pendingAction=null;unlockOpen=false;if(action)await runAction(action,options)}catch{options.toast('เชื่อมต่อระบบเอกสารไม่ได้','error')}finally{busy=false;progress={label:'',current:0,total:0};options.render()}})
 }
 
 export function resetTripDocumentViewer() {
