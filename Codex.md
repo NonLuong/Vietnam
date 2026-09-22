@@ -2,7 +2,7 @@
 
 เอกสารนี้เป็นบันทึกส่งต่องานฉบับละเอียดสำหรับกลับมาพัฒนาโปรเจกต์ในครั้งถัดไป โดยสรุปทั้งสถานะปัจจุบัน แนวคิดการออกแบบ โครงสร้างระบบ ข้อจำกัด วิธีตรวจสอบ และวิธีเผยแพร่
 
-อัปเดตล่าสุด: 14 กันยายน 2026
+อัปเดตล่าสุด: 22 กันยายน 2026
 
 ## 1. เป้าหมายของโปรเจกต์
 
@@ -22,9 +22,11 @@
 
 Production URL:
 
-https://trip-budget-4-vs-5-days.nontakarn1596.chatgpt.site
+https://da-nang-trip-2026.vercel.app
 
-เว็บไซต์เผยแพร่ผ่าน OpenAI Sites และตั้งค่าเป็น Public เพื่อให้สมาชิกในครอบครัวเปิดจากลิงก์ได้
+เว็บไซต์เผยแพร่หลักผ่าน Vercel และเปิดเป็น Public เพื่อให้สมาชิกในครอบครัวเปิดจากลิงก์ได้
+
+OpenAI Sites URL เดิมถูกปิดการเข้าถึงสาธารณะแล้วเมื่อ 22 กันยายน 2026 โดยเปลี่ยนเป็น `custom` แบบเจ้าของเท่านั้น ไม่ใช้เป็น Production หรือ fallback อีกต่อไป
 
 Sites project ID ถูกเก็บไว้ใน `.openai/hosting.json`:
 
@@ -37,7 +39,7 @@ Sites project ID ถูกเก็บไว้ใน `.openai/hosting.json`:
 }
 ```
 
-ห้ามสร้าง Site ใหม่ หากยังสามารถใช้ project ID นี้ได้ ให้เผยแพร่เวอร์ชันใหม่ทับ Site เดิมเท่านั้น
+เก็บ project ID นี้ไว้เพื่ออ้างอิงประวัติเท่านั้น ห้ามเผยแพร่ OpenAI Sites ให้เป็น Public อีก เว้นแต่ผู้ใช้สั่งอย่างชัดเจน
 
 ## 3. Technology Stack
 
@@ -48,7 +50,7 @@ Sites project ID ถูกเก็บไว้ใน `.openai/hosting.json`:
 - Supabase JavaScript Client 2.116.0
 - Vitest 3
 - ESLint 9
-- Static hosting ผ่าน OpenAI Sites
+- Static hosting หลักผ่าน Vercel
 - Supabase Postgres + Realtime สำหรับข้อมูลกลาง
 - Local Storage เป็นข้อมูลสำรองในอุปกรณ์และเก็บประวัติเครื่องคิดเลข
 
@@ -620,7 +622,7 @@ d6fd6b0 Expand site into Da Nang trip planner
 
 ## 25. สรุปสั้นสำหรับ Codex รอบถัดไป
 
-นี่คือ Vite + TypeScript static SPA สำหรับวางแผนงบทริปดานัง 4 คน ข้อมูลหลักซิงก์ผ่าน Supabase JSON document และสำรอง Local Storage หน้าใช้งานคือ Overview, Expenses, Daily Plan, Trip Guide, Calculator และ Settings ระบบเน้น Mobile-first มี floating add button, expense bottom sheet, compact cards, collapsible daily details และ carousel คู่มือ 6 ภาพ หน้า Trip Guide แยกจาก Overview แต่ไม่อยู่ใน Bottom Navigation บนโทรศัพท์ โดยเปิดจากปุ่มใน Overview แทน เว็บไซต์ Public และเผยแพร่หลักผ่าน Vercel ที่ `https://da-nang-trip-2026.vercel.app`; OpenAI Sites URL เดิมยังคงอยู่เป็นสำรอง ผู้ใช้ไม่ต้องการ Login และห้ามเปิด Browser ทดสอบ ให้ใช้ TypeScript และ production build แทน อย่าเพิ่มระบบใหม่โดยไม่มีคำขอหรือ feedback จากการใช้งานจริง
+นี่คือ Vite + TypeScript static SPA สำหรับวางแผนงบทริปดานัง 4 คน ข้อมูลหลักซิงก์ผ่าน Supabase JSON document และสำรอง Local Storage หน้าใช้งานคือ Overview, Expenses, Daily Plan, Trip Guide, Calculator และ Settings ระบบเน้น Mobile-first มี floating add button, expense bottom sheet, compact cards, collapsible daily details และ carousel คู่มือ 6 ภาพ หน้า Trip Guide แยกจาก Overview แต่ไม่อยู่ใน Bottom Navigation บนโทรศัพท์ โดยเปิดจากปุ่มใน Overview แทน เว็บไซต์ Public และเผยแพร่หลักผ่าน Vercel ที่ `https://da-nang-trip-2026.vercel.app`; OpenAI Sites URL เดิมถูกจำกัดเป็นเจ้าของเท่านั้นและไม่ใช่ fallback แล้ว ผู้ใช้ไม่ต้องการ Login และห้ามเปิด Browser ทดสอบ ให้ใช้ TypeScript และ production build แทน อย่าเพิ่มระบบใหม่โดยไม่มีคำขอหรือ feedback จากการใช้งานจริง
 
 ## 26. การแก้สถานะงานค้างวันที่ 14 กันยายน 2026
 
@@ -639,6 +641,6 @@ d6fd6b0 Expand site into Da Nang trip planner
 - ใช้ `vercel.json` ระบุ Vite build, output `dist` และ cache policy สำหรับ HTML/hashed assets
 - `.vercel/` และ environment files เป็นข้อมูลเฉพาะเครื่องและต้องไม่ commit
 - Supabase project, schema, publishable key และข้อมูลกลางไม่เปลี่ยน การเปิดจาก Vercel จึงใช้ข้อมูลเดียวกับเว็บไซต์เดิม
-- OpenAI Sites URL เดิมยังออนไลน์เป็น fallback; ห้ามลบหรือปิดจนกว่าผู้ใช้จะสั่ง
+- OpenAI Sites URL เดิมถูกเปลี่ยนจาก `public` เป็น `custom` แบบเจ้าของเท่านั้นเมื่อ 22 กันยายน 2026 ตามคำสั่งผู้ใช้ บุคคลทั่วไปจึงเปิดไม่ได้
 - ขั้นตอนเผยแพร่รอบถัดไป: `npm run build`, `vercel pull --yes --environment production`, `vercel build --yes --target production`, แล้ว `vercel deploy --prebuilt --prod --yes`
 - หลัง Deploy ต้องตรวจสถานะจาก CLI ว่า `READY`; ไม่ต้องเปิด Browser ทดสอบตามข้อกำหนดของผู้ใช้
