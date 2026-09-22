@@ -1,0 +1,19 @@
+{
+  "name": "ทริปดานัง 2026",
+  "short_name": "ทริปดานัง",
+  "description": "แผนการเดินทาง ค่าใช้จ่าย และเอกสารสำหรับทริปดานัง",
+  "lang": "th",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f2f7f5",
+  "theme_color": "#0d8178",
+  "icons": [
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
