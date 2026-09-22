@@ -1,17 +1,33 @@
 import { icon } from './icons'
 import { tripDocumentCategories, tripDocuments, type TripDocumentCategory, type TripDocument } from './trip-document-data'
 import { getStoredDocument, listStoredDocumentIds, removeStoredDocument, storeDocument } from './trip-document-store'
+import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
 
 type BindOptions = {render: () => void; back: () => void; toast: (message: string, type?: 'ok' | 'error') => void}
 type PendingAction = {kind: 'open' | 'download'; id: string} | {kind: 'download-all'} | null
 
 let selectedCategory: TripDocumentCategory | 'all' = 'all'
 let offlineIds: Set<string> | null = null
-let viewer: {document: TripDocument; url: string} | null = null
+let viewer: {document: TripDocument; url: string; blob: Blob; zoom: number} | null = null
 let unlockOpen = false
 let pendingAction: PendingAction = null
 let busy = false
 let progress = {label: '', current: 0, total: 0}
+let pdfRenderVersion = 0
+let pdfModulePromise: Promise<typeof import('pdfjs-dist')> | null = null
+
+function loadPdfModule() {
+  if (!pdfModulePromise) {
+    pdfModulePromise = Promise.all([
+      import('pdfjs-dist'),
+      import('pdfjs-dist/build/pdf.worker.min.mjs?url')
+    ]).then(([pdfModule, workerModule]) => {
+      pdfModule.GlobalWorkerOptions.workerSrc = workerModule.default
+      return pdfModule
+    })
+  }
+  return pdfModulePromise
+}
 
 const esc = (value: string) => value.replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character] as string))
 
@@ -34,7 +50,63 @@ function unlockDialog() {
 
 function viewerDialog() {
   if (!viewer) return ''
-  return `<div class="document-viewer-backdrop"><section class="document-viewer" role="dialog" aria-modal="true" aria-labelledby="documentViewerTitle"><header><div><h2 id="documentViewerTitle">${esc(viewer.document.title)}</h2><small>${viewer.document.owners.map(esc).join(' · ')}</small></div><div class="actions"><a class="btn compact" href="${viewer.url}" download="${viewer.document.id}.pdf">${icon('download')} ดาวน์โหลด</a><button class="icon-btn" type="button" data-close-document-viewer aria-label="ปิดเอกสาร">${icon('close')}</button></div></header><iframe src="${viewer.url}#toolbar=1&navpanes=0&view=FitH" title="${esc(viewer.document.title)}"></iframe></section></div>`
+  return `<div class="document-viewer-backdrop"><section class="document-viewer" role="dialog" aria-modal="true" aria-labelledby="documentViewerTitle"><header><div><h2 id="documentViewerTitle">${esc(viewer.document.title)}</h2><small>${viewer.document.owners.map(esc).join(' · ')}</small></div><div class="actions"><a class="btn compact" href="${viewer.url}" download="${viewer.document.id}.pdf">${icon('download')} ดาวน์โหลด</a><button class="icon-btn" type="button" data-close-document-viewer aria-label="ปิดเอกสาร">${icon('close')}</button></div></header><div class="pdf-viewer-toolbar" aria-label="เครื่องมือดูเอกสาร"><button class="btn compact" type="button" data-pdf-fit>พอดีจอ</button><button class="icon-btn" type="button" data-pdf-zoom-out aria-label="ย่อเอกสาร">−</button><output data-pdf-zoom aria-live="polite">${Math.round(viewer.zoom*100)}%</output><button class="icon-btn" type="button" data-pdf-zoom-in aria-label="ขยายเอกสาร">+</button><span data-pdf-page-count>กำลังอ่านเอกสาร…</span></div><div class="pdf-page-scroll" data-pdf-page-scroll><div class="pdf-loading" role="status">กำลังเตรียมเอกสาร…</div><div class="pdf-pages" data-pdf-pages></div></div></section></div>`
+}
+
+async function renderPdfPages(options: BindOptions) {
+  if (!viewer) return
+  const activeViewer = viewer
+  const pages = document.querySelector<HTMLElement>('[data-pdf-pages]')
+  const scroller = document.querySelector<HTMLElement>('[data-pdf-page-scroll]')
+  const loading = document.querySelector<HTMLElement>('.pdf-loading')
+  const pageCount = document.querySelector<HTMLElement>('[data-pdf-page-count]')
+  if (!pages || !scroller) return
+  const renderVersion = ++pdfRenderVersion
+  pages.replaceChildren()
+  if (loading) loading.hidden = false
+  if (pageCount) pageCount.textContent = 'กำลังอ่านเอกสาร…'
+  let loadingTask: PDFDocumentLoadingTask | null = null
+  try {
+    const {getDocument} = await loadPdfModule()
+    loadingTask = getDocument({data:new Uint8Array(await activeViewer.blob.arrayBuffer())})
+    const pdf = await loadingTask.promise
+    if (renderVersion !== pdfRenderVersion || viewer !== activeViewer) return
+    if (pageCount) pageCount.textContent = `${pdf.numPages} หน้า`
+    const availableWidth = Math.max(240, scroller.clientWidth - 24)
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      if (renderVersion !== pdfRenderVersion || viewer !== activeViewer) return
+      const page = await pdf.getPage(pageNumber)
+      const baseViewport = page.getViewport({scale:1})
+      const cssScale = availableWidth / baseViewport.width * activeViewer.zoom
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+      const renderViewport = page.getViewport({scale:cssScale * pixelRatio})
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.ceil(renderViewport.width)
+      canvas.height = Math.ceil(renderViewport.height)
+      canvas.style.width = `${Math.ceil(baseViewport.width * cssScale)}px`
+      canvas.style.height = `${Math.ceil(baseViewport.height * cssScale)}px`
+      canvas.setAttribute('aria-label', `หน้า ${pageNumber} จาก ${pdf.numPages}`)
+      const figure = document.createElement('figure')
+      figure.className = 'pdf-page'
+      const caption = document.createElement('figcaption')
+      caption.textContent = `หน้า ${pageNumber} / ${pdf.numPages}`
+      figure.append(canvas, caption)
+      pages.append(figure)
+      await page.render({canvas,viewport:renderViewport}).promise
+      if (pageCount) pageCount.textContent = `แสดงแล้ว ${pageNumber} / ${pdf.numPages} หน้า`
+    }
+    if (pageCount) pageCount.textContent = `${pdf.numPages} หน้า`
+    if (loading) loading.hidden = true
+  } catch {
+    if (renderVersion !== pdfRenderVersion) return
+    if (loading) {
+      loading.hidden = false
+      loading.textContent = 'แสดงเอกสารไม่สำเร็จ กรุณาปิดแล้วลองเปิดใหม่'
+    }
+    options.toast('แสดงหน้า PDF ไม่สำเร็จ','error')
+  } finally {
+    if (loadingTask) await loadingTask.destroy().catch(()=>undefined)
+  }
 }
 
 export function renderTripDocuments() {
@@ -87,7 +159,7 @@ async function runAction(action: Exclude<PendingAction, null>, options: BindOpti
         options.toast('เก็บเอกสารไว้ใช้ออฟไลน์แล้ว')
       } else {
         if (viewer) URL.revokeObjectURL(viewer.url)
-        viewer = {document,url:URL.createObjectURL(blob)}
+        viewer = {document,url:URL.createObjectURL(blob),blob,zoom:1}
         progress = {label:`เปิด ${document.title} แล้ว`,current:1,total:1}
       }
     }
@@ -115,11 +187,16 @@ export function bindTripDocuments(options: BindOptions) {
   document.querySelector('[data-download-all-documents]')?.addEventListener('click',()=>void runAction({kind:'download-all'},options))
   document.querySelectorAll<HTMLElement>('[data-remove-trip-document]').forEach(button=>button.addEventListener('click',async()=>{await removeStoredDocument(button.dataset.removeTripDocument||'');offlineIds=await listStoredDocumentIds();options.render();options.toast('เอาเอกสารออกจากเครื่องแล้ว')}))
   document.querySelectorAll('[data-close-document-unlock]').forEach(button=>button.addEventListener('click',()=>{unlockOpen=false;pendingAction=null;options.render()}))
-  document.querySelector('[data-close-document-viewer]')?.addEventListener('click',()=>{if(viewer)URL.revokeObjectURL(viewer.url);viewer=null;options.render()})
+  document.querySelector('[data-close-document-viewer]')?.addEventListener('click',()=>{pdfRenderVersion+=1;if(viewer)URL.revokeObjectURL(viewer.url);viewer=null;options.render()})
+  document.querySelector('[data-pdf-fit]')?.addEventListener('click',()=>{if(!viewer)return;viewer.zoom=1;const output=document.querySelector<HTMLOutputElement>('[data-pdf-zoom]');if(output)output.value='100%';void renderPdfPages(options)})
+  document.querySelector('[data-pdf-zoom-out]')?.addEventListener('click',()=>{if(!viewer)return;viewer.zoom=Math.max(.6,Number((viewer.zoom-.2).toFixed(1)));const output=document.querySelector<HTMLOutputElement>('[data-pdf-zoom]');if(output)output.value=`${Math.round(viewer.zoom*100)}%`;void renderPdfPages(options)})
+  document.querySelector('[data-pdf-zoom-in]')?.addEventListener('click',()=>{if(!viewer)return;viewer.zoom=Math.min(2.4,Number((viewer.zoom+.2).toFixed(1)));const output=document.querySelector<HTMLOutputElement>('[data-pdf-zoom]');if(output)output.value=`${Math.round(viewer.zoom*100)}%`;void renderPdfPages(options)})
   document.querySelector<HTMLFormElement>('#documentUnlockForm')?.addEventListener('submit',async event=>{event.preventDefault();const pin=document.querySelector<HTMLInputElement>('#documentPin')?.value||'';busy=true;progress={label:'กำลังตรวจสอบ PIN…',current:0,total:0};options.render();try{const response=await fetch('/api/document-session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pin}),credentials:'same-origin'});if(!response.ok){options.toast(response.status===401?'PIN ไม่ถูกต้อง':'ยังเปิดระบบเอกสารไม่ได้','error');return}const action=pendingAction;pendingAction=null;unlockOpen=false;if(action)await runAction(action,options)}catch{options.toast('เชื่อมต่อระบบเอกสารไม่ได้','error')}finally{busy=false;progress={label:'',current:0,total:0};options.render()}})
+  if (viewer) void renderPdfPages(options)
 }
 
 export function resetTripDocumentViewer() {
+  pdfRenderVersion += 1
   if (viewer) URL.revokeObjectURL(viewer.url)
   viewer = null
   unlockOpen = false
