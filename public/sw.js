@@ -1,4 +1,4 @@
-const CACHE_NAME = 'da-nang-trip-shell-v3'
+const CACHE_NAME = 'da-nang-trip-shell-v4'
 const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/app-icon.svg', '/app-icon-192.png', '/app-icon-512.png', '/apple-touch-icon.png', '/fonts/NotoSansThai-Variable.ttf']
 
 self.addEventListener('install', event => {
@@ -13,7 +13,8 @@ self.addEventListener('fetch', event => {
   const request = event.request
   if (request.method !== 'GET') return
   const url = new URL(request.url)
-  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return
+  const isDevelopmentRequest = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1' || url.pathname.startsWith('/src/') || url.pathname.startsWith('/@vite/') || url.pathname.startsWith('/@fs/')
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/') || isDevelopmentRequest) return
 
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request).then(response=>{

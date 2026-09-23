@@ -1,4 +1,15 @@
-if ('serviceWorker' in navigator) {
+const isLocalDevelopment = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+
+if ('serviceWorker' in navigator && isLocalDevelopment) {
+  window.addEventListener('load', () => {
+    void Promise.all([
+      navigator.serviceWorker.getRegistrations().then(registrations => Promise.all(registrations.map(registration => registration.unregister()))),
+      'caches' in window ? caches.keys().then(keys => Promise.all(keys.map(key => caches.delete(key)))) : Promise.resolve([])
+    ]).then(() => {
+      if (navigator.serviceWorker.controller) window.location.reload()
+    }).catch(() => undefined)
+  }, {once:true})
+} else if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     void navigator.serviceWorker.register('/sw.js').then(registration=>{
       registration.addEventListener('updatefound',()=>{

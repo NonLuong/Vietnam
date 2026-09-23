@@ -1,5 +1,6 @@
 import type { AppData } from './types'
 import { initialTripEssentials } from './app-data'
+import { tripItineraryDays } from './trip-itinerary'
 
 export const defaultData: AppData = {
   settings: {
@@ -11,13 +12,7 @@ export const defaultData: AppData = {
     {id:'e-flight',date:'2026-09-26',dayId:'day-2026-09-26',item:'ตั๋วเครื่องบิน',category:'Flights',amount:20011.28,currency:'THB',payerId:'p1',status:'paid',note:'ไป–กลับ + ที่นั่ง + ประกัน · Booking MEJWTW'},
     {id:'e-hotel-menora',date:'2026-09-26',dayId:'day-2026-09-26',item:'ที่พักดานัง 26–28 ก.ย.',category:'Accommodation',amount:3350.79,currency:'THB',payerId:'p1',status:'paid',note:'Menora Premium Da Nang · 2 ห้อง · 2 คืน'},
   ],
-  days: [
-    {id:'day-2026-09-26',date:'2026-09-26',title:'บินจากดอนเมืองถึงดานัง',activities:'AirAsia FD636 · ออก 09:50 · ถึง 11:30 · เช็กอิน Menora Premium',budgetTHB:2200,places:[{id:'dmk-outbound',name:'Don Mueang International Airport',address:'กรุงเทพฯ',mapUrl:'Don Mueang International Airport'},{id:'dad-arrival',name:'Da Nang International Airport',address:'Da Nang, Vietnam',mapUrl:'Da Nang International Airport'},{id:'menora-hotel',name:'Menora Premium Da Nang - Sea Corner Boutique',address:'ยังไม่ได้ระบุ',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'}]},
-    {id:'day-2026-09-27',date:'2026-09-27',title:'เมืองเก่าและคาเฟ่',activities:'พัก Menora Premium · Hoi An · คาเฟ่ · อาหารเวียดนาม',budgetTHB:4500,places:[{id:'menora-day-2',name:'Menora Premium Da Nang - Sea Corner Boutique',address:'ยังไม่ได้ระบุ',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'},{id:'hoi-an',name:'Hoi An Ancient Town',address:'Hoi An, Vietnam',mapUrl:'Hoi An Ancient Town'}]},
-    {id:'day-2026-09-28',date:'2026-09-28',title:'Ba Na Hills',activities:'Golden Bridge · French Village · ที่พักคืนที่ 3 ยังไม่ได้ระบุ',budgetTHB:7200,places:[{id:'ba-na-hills',name:'Ba Na Hills',address:'Da Nang, Vietnam',mapUrl:'Ba Na Hills'},{id:'golden-bridge',name:'Golden Bridge',address:'Ba Na Hills, Da Nang',mapUrl:'Golden Bridge Ba Na Hills'},{id:'french-village',name:'French Village',address:'Ba Na Hills, Da Nang',mapUrl:'French Village Ba Na Hills'}]},
-    {id:'day-2026-09-29',date:'2026-09-29',title:'ทะเลและช้อปปิ้ง',activities:'My Khe Beach · Han Market · ที่พักคืนที่ 4 ยังไม่ได้ระบุ',budgetTHB:4800,places:[{id:'my-khe-beach',name:'My Khe Beach',address:'Da Nang, Vietnam',mapUrl:'My Khe Beach Da Nang'},{id:'han-market',name:'Han Market',address:'Da Nang, Vietnam',mapUrl:'Han Market Da Nang'}]},
-    {id:'day-2026-09-30',date:'2026-09-30',title:'เดินทางกลับกรุงเทพฯ',activities:'AirAsia FD639 · ออก 18:10 · ถึง 19:55',budgetTHB:1800,places:[{id:'dad-departure',name:'Da Nang International Airport',address:'Da Nang, Vietnam',mapUrl:'Da Nang International Airport'},{id:'dmk-arrival',name:'Don Mueang International Airport',address:'กรุงเทพฯ',mapUrl:'Don Mueang International Airport'}]}
-  ],
+  days: tripItineraryDays.map(day => ({...day, places: day.places.map(place => ({...place}))})),
   tripEssentials: initialTripEssentials.map(item => ({...item})),
   packingItems: [
     {id:'packing-flight-booking',ownerId:'p1',category:'documents',name:'เอกสารยืนยันเที่ยวบิน AirAsia · MEJWTW',packed:false},
