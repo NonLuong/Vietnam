@@ -43,8 +43,10 @@ export function normalizeAppData(value: AppData): AppData {
       ownerId: typeof item.ownerId === 'string' && item.ownerId ? item.ownerId : 'p1'
     })) : [],
     pinnedNote: typeof value.pinnedNote === 'string' ? value.pinnedNote : '',
-    expenses: value.expenses.map(expense => ({
+    // The simplified budget records paid expenses only; discard legacy forecasts.
+    expenses: value.expenses.filter(expense => expense.status === 'paid').map(expense => ({
       ...expense,
+      status: 'paid' as const,
       dayId: expense.dayId === undefined
         ? days.find(day => day.date === expense.date)?.id || null
         : expense.dayId

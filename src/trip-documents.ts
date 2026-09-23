@@ -93,7 +93,9 @@ async function renderPdfPages(options: BindOptions) {
       figure.append(canvas, caption)
       pages.append(figure)
       await page.render({canvas,viewport:renderViewport}).promise
+      if (pageNumber === 1 && loading) loading.hidden = true
       if (pageCount) pageCount.textContent = `แสดงแล้ว ${pageNumber} / ${pdf.numPages} หน้า`
+      await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()))
     }
     if (pageCount) pageCount.textContent = `${pdf.numPages} หน้า`
     if (loading) loading.hidden = true

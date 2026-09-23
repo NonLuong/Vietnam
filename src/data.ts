@@ -10,8 +10,6 @@ export const defaultData: AppData = {
     {id:'e-sim',date:'2026-09-26',dayId:'day-2026-09-26',item:'ค่า SIM',category:'Other',amount:423.05,currency:'THB',payerId:'p1',status:'paid',note:'Viettel'},
     {id:'e-flight',date:'2026-09-26',dayId:'day-2026-09-26',item:'ตั๋วเครื่องบิน',category:'Flights',amount:20011.28,currency:'THB',payerId:'p1',status:'paid',note:'ไป–กลับ + ที่นั่ง + ประกัน · Booking MEJWTW'},
     {id:'e-hotel-menora',date:'2026-09-26',dayId:'day-2026-09-26',item:'ที่พักดานัง 26–28 ก.ย.',category:'Accommodation',amount:3350.79,currency:'THB',payerId:'p1',status:'paid',note:'Menora Premium Da Nang · 2 ห้อง · 2 คืน'},
-    {id:'e-parking',date:'2026-09-26',dayId:'day-2026-09-26',item:'ที่จอดรถดอนเมือง',category:'Transportation',amount:750,currency:'THB',payerId:'p1',status:'planned',note:'150 บาท / วัน'},
-    {id:'e-golden-bridge',date:'2026-09-28',dayId:'day-2026-09-28',item:'สะพานทอง',category:'Activities',amount:5600,currency:'THB',payerId:'p1',status:'planned',note:'ประมาณการ'}
   ],
   days: [
     {id:'day-2026-09-26',date:'2026-09-26',title:'บินจากดอนเมืองถึงดานัง',activities:'AirAsia FD636 · ออก 09:50 · ถึง 11:30 · เช็กอิน Menora Premium',budgetTHB:2200,places:[{id:'dmk-outbound',name:'Don Mueang International Airport',address:'กรุงเทพฯ',mapUrl:'Don Mueang International Airport'},{id:'dad-arrival',name:'Da Nang International Airport',address:'Da Nang, Vietnam',mapUrl:'Da Nang International Airport'},{id:'menora-hotel',name:'Menora Premium Da Nang - Sea Corner Boutique',address:'ยังไม่ได้ระบุ',mapUrl:'Menora Premium Da Nang Sea Corner Boutique'}]},
