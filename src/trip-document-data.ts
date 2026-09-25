@@ -1,4 +1,4 @@
-export type TripDocumentCategory = 'flight' | 'banahills' | 'hotel' | 'insurance'
+export type TripDocumentCategory = 'flight' | 'banahills' | 'hotel' | 'insurance' | 'prearrival'
 
 export type TripDocument = {
   id: string
@@ -14,7 +14,8 @@ export const tripDocumentCategories: {id: TripDocumentCategory; label: string; d
   {id:'flight',label:'เที่ยวบิน',description:'รายละเอียดเที่ยวบิน ที่นั่ง และสัมภาระ',icon:'plane'},
   {id:'banahills',label:'บานาฮิลส์',description:'บัตรและรายละเอียดการจองแยกตามโปรโมชั่น',icon:'ticket'},
   {id:'hotel',label:'ที่พัก',description:'ใบยืนยันการจองแยกตามโรงแรม',icon:'hotel'},
-  {id:'insurance',label:'ประกันการเดินทาง',description:'กรมธรรม์และความคุ้มครองของแต่ละคน',icon:'shield'}
+  {id:'insurance',label:'ประกันการเดินทาง',description:'กรมธรรม์และความคุ้มครองของแต่ละคน',icon:'shield'},
+  {id:'prearrival',label:'เอกสารก่อนเดินทาง',description:'เอกสารที่เตรียมไว้ใช้ก่อนออกเดินทาง',icon:'file'}
 ]
 
 export const tripDocuments: TripDocument[] = [
@@ -26,5 +27,7 @@ export const tripDocuments: TripDocument[] = [
   {id:'insurance-nont',category:'insurance',title:'ประกันการเดินทาง · นนท์',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['นนท์'],version:1},
   {id:'insurance-mameow',category:'insurance',title:'ประกันการเดินทาง · มะเหมี่ยว',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['มะเหมี่ยว'],version:1},
   {id:'insurance-father',category:'insurance',title:'ประกันการเดินทาง · พ่อ',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['พ่อ'],version:1},
-  {id:'insurance-mother',category:'insurance',title:'ประกันการเดินทาง · แม่',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['แม่'],version:1}
+  {id:'insurance-mother',category:'insurance',title:'ประกันการเดินทาง · แม่',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['แม่'],version:1},
+  {id:'prearrival-mm',category:'prearrival',title:'เอกสารก่อนเดินทาง · นนท์และมะเหมี่ยว',description:'เอกสารที่เตรียมไว้ก่อนออกเดินทาง',owners:['นนท์','มะเหมี่ยว'],version:1},
+  {id:'prearrival-parents',category:'prearrival',title:'เอกสารก่อนเดินทาง · พ่อและแม่',description:'เอกสารที่เตรียมไว้ก่อนออกเดินทาง',owners:['พ่อ','แม่'],version:1}
 ]

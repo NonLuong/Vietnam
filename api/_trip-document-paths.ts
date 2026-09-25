@@ -7,5 +7,7 @@ export const documentPaths: Record<string, string> = {
   'insurance-nont': 'insurance/nont.pdf',
   'insurance-mameow': 'insurance/mameow.pdf',
   'insurance-father': 'insurance/father.pdf',
-  'insurance-mother': 'insurance/mother.pdf'
+  'insurance-mother': 'insurance/mother.pdf',
+  'prearrival-mm': 'prearrived/mm.pdf',
+  'prearrival-parents': 'prearrived/parent.pdf'
 }
