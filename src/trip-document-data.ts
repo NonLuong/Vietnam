@@ -28,6 +28,6 @@ export const tripDocuments: TripDocument[] = [
   {id:'insurance-mameow',category:'insurance',title:'ประกันการเดินทาง · มะเหมี่ยว',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['มะเหมี่ยว'],version:1},
   {id:'insurance-father',category:'insurance',title:'ประกันการเดินทาง · พ่อ',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['พ่อ'],version:1},
   {id:'insurance-mother',category:'insurance',title:'ประกันการเดินทาง · แม่',description:'กรมธรรม์และรายละเอียดความคุ้มครอง',owners:['แม่'],version:1},
-  {id:'prearrival-mm',category:'prearrival',title:'เอกสารก่อนเดินทาง · นนท์และมะเหมี่ยว',description:'เอกสารที่เตรียมไว้ก่อนออกเดินทาง',owners:['นนท์','มะเหมี่ยว'],version:1},
-  {id:'prearrival-parents',category:'prearrival',title:'เอกสารก่อนเดินทาง · พ่อและแม่',description:'เอกสารที่เตรียมไว้ก่อนออกเดินทาง',owners:['พ่อ','แม่'],version:1}
+  {id:'prearrival-mm',category:'prearrival',title:'เอกสารก่อนเดินทาง · มะเหมี่ยว',description:'เอกสารที่เตรียมไว้ก่อนออกเดินทาง',owners:['มะเหมี่ยว'],version:1},
+  {id:'prearrival-parents',category:'prearrival',title:'เอกสารก่อนเดินทาง · พ่อ, แม่และนนท์',description:'เอกสารที่เตรียมไว้ก่อนออกเดินทาง',owners:['พ่อ','แม่','นนท์'],version:1}
 ]
